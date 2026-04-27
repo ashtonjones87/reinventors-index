@@ -17,6 +17,7 @@ interface ChatWindowProps {
   latestSummary: any
   previousRadar: any
   detectedContext?: string | null
+  preDiagnosticContext?: string | null
   preDiagnostic?: boolean
   onDiagnosticReady?: (context: string | null) => void
 }
@@ -37,10 +38,13 @@ export default function ChatWindow({
   latestSummary,
   previousRadar,
   detectedContext,
+  preDiagnosticContext,
   preDiagnostic = false,
   onDiagnosticReady,
 }: ChatWindowProps) {
-  const { messages, isStreaming, error, sendMessage, retryLastMessage } = useChat()
+  const { messages, isStreaming, error, sendMessage, retryLastMessage } = useChat(
+    preDiagnosticContext ? { preDiagnosticContext } : undefined
+  )
   const [input, setInput] = useState('')
   const [sessionEnded, setSessionEnded] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
