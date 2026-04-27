@@ -1,8 +1,8 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — The Reinventor's Mindset™ Index",
+  title: "Privacy Policy - The Reinventor's Mindset™ Index",
 }
 
 const sections = [
@@ -12,7 +12,7 @@ const sections = [
     content: (
       <>
         <p>
-          The Reinventor&apos;s Mindset Companion (&ldquo;the Companion&rdquo;) is operated by Ashton Jones. If you have questions about this policy or your data, contact us at{' '}
+          The Reinventor&apos;s Mindset Index (&ldquo;the Index&rdquo;) is operated by Ashton Jones. If you have questions about this policy or your data, contact us at{' '}
           <a href="mailto:ashton@ashtonjones.com.au" style={{ color: '#334a69', textDecoration: 'underline' }}>
             ashton@ashtonjones.com.au
           </a>.
@@ -25,12 +25,11 @@ const sections = [
     title: 'What We Collect',
     content: (
       <>
-        <p style={{ marginBottom: '14px' }}>When you use the Companion, we collect:</p>
+        <p style={{ marginBottom: '14px' }}>When you use the Index, we collect:</p>
         <ul>
           <li>Your name and email address (at sign-up)</li>
-          <li>Your selected journey (Founder, Innovator or Leader)</li>
           <li>Your responses to the 16-question diagnostic and computed mindset scores</li>
-          <li>Full chat session transcripts — the complete word-for-word conversation from every session</li>
+          <li>Full chat session transcripts - the complete word-for-word conversation from every session</li>
           <li>Session summaries including framework explored, core tension, practical action and shift observed</li>
           <li>Usage data such as message count and session timestamps</li>
         </ul>
@@ -47,13 +46,13 @@ const sections = [
       <>
         <p style={{ marginBottom: '14px' }}>We use your data for two purposes:</p>
         <p style={{ marginBottom: '10px' }}>
-          <strong style={{ color: '#334a69' }}>Coaching.</strong> Your diagnostic results, conversation history and session summaries enable the Companion to deliver personalised coaching and build on previous sessions.
+          <strong style={{ color: '#334a69' }}>Coaching.</strong> Your diagnostic results, conversation history and session summaries enable the Index to deliver personalised coaching and build on previous sessions.
         </p>
         <p style={{ marginBottom: '14px' }}>
-          <strong style={{ color: '#334a69' }}>Research.</strong> Anonymised, aggregate insights derived from usage patterns and conversations are used for academic research, including peer-reviewed publications developed in collaboration with the University of Sydney Business School. All research data is fully anonymised — no information in any research output can be linked to you personally.
+          <strong style={{ color: '#334a69' }}>Research.</strong> Anonymised, aggregate insights derived from usage patterns and conversations are used for academic research, including peer-reviewed publications developed in collaboration with the University of Sydney Business School. All research data is fully anonymised - no information in any research output can be linked to you personally.
         </p>
         <p>
-          Use of the Companion constitutes consent to both purposes. If you do not wish your anonymised data to be used for research, please do not create an account.
+          Use of the Index constitutes consent to both purposes. If you do not wish your anonymised data to be used for research, please do not create an account.
         </p>
       </>
     ),
@@ -77,13 +76,13 @@ const sections = [
         </p>
         <ul>
           <li>
-            <strong style={{ color: '#334a69' }}>Anthropic</strong> — processes your conversation data via the Claude API to power the Companion&apos;s coaching responses. Anthropic does not use your data for model training.
+            <strong style={{ color: '#334a69' }}>Anthropic</strong> - processes your conversation data via the Claude API to power the Index&apos;s coaching responses. Anthropic does not use your data for model training.
           </li>
           <li>
-            <strong style={{ color: '#334a69' }}>Clerk</strong> — processes your authentication data (name, email and session tokens) to manage sign-up and login.
+            <strong style={{ color: '#334a69' }}>Clerk</strong> - processes your authentication data (name, email and session tokens) to manage sign-up and login.
           </li>
           <li>
-            <strong style={{ color: '#334a69' }}>Supabase</strong> — hosts the database where your data is stored.
+            <strong style={{ color: '#334a69' }}>Supabase</strong> - hosts the database where your data is stored.
           </li>
         </ul>
         <p style={{ marginTop: '14px' }}>
@@ -167,7 +166,7 @@ const sections = [
           marginTop: '14px',
           marginBottom: '14px',
         }}>
-          Consent for all three purposes is required to use the Companion. These are not separable — the research purpose is a core part of the project.
+          Consent for all three purposes is required to use the Index. These are not separable - the research purpose is a core part of the project.
         </p>
         <p>
           You may withdraw your consent at any time by contacting us at{' '}
@@ -185,10 +184,10 @@ const sections = [
       <>
         <p style={{ marginBottom: '14px' }}>We protect your data through:</p>
         <ul>
-          <li>Row Level Security on all database tables — you can only access your own data</li>
+          <li>Row Level Security on all database tables - you can only access your own data</li>
           <li>All API keys stored server-side and never exposed to your browser</li>
-          <li>JWT verification on every API request — unauthenticated requests are rejected</li>
-          <li>Invite-only access controlled by the Companion administrator</li>
+          <li>JWT verification on every API request - unauthenticated requests are rejected</li>
+          <li>Invite-only access controlled by the Index administrator</li>
         </ul>
       </>
     ),
@@ -247,7 +246,7 @@ export default function PrivacyPage() {
       <div style={{ maxWidth: '720px', margin: '0 auto' }}>
 
         {/* Back link */}
-        <Link href="/index" className="privacy-back-link" style={{
+        <Link href="/home" className="privacy-back-link" style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '6px',
@@ -262,7 +261,7 @@ export default function PrivacyPage() {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6"/>
           </svg>
-          Back
+          Back to the Index
         </Link>
 
         {/* Header */}
@@ -365,13 +364,13 @@ export default function PrivacyPage() {
           <p style={{ fontSize: '12px', color: '#C4BFB8', fontFamily: 'var(--font-inter)' }}>
             &copy; {new Date().getFullYear()} Ashton Jones. All rights reserved.
           </p>
-          <Link href="/index" style={{
+          <Link href="/home" style={{
             fontSize: '12px',
             color: '#9CA3AF',
             textDecoration: 'none',
             fontFamily: 'var(--font-inter)',
           }}>
-            Back to the Companion
+            Back to the Index
           </Link>
         </div>
       </div>

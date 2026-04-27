@@ -1,4 +1,4 @@
-// Superseded by /api/user/state — this route is no longer used.
+﻿// Superseded by /api/user/state - this route is no longer used.
 export async function GET() {
   return new Response('Gone', { status: 410 })
 }

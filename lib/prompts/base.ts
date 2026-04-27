@@ -112,7 +112,7 @@ Use "you" language - make it personal.
 
 Australian English spelling throughout.
 
-No em dashes (—) or en dashes (–). Use a plain hyphen with spaces ( - ) instead.
+No em dashes (-) or en dashes (–). Use a plain hyphen with spaces ( - ) instead.
 
 No emojis. No corporate buzzwords. No motivational poster language. No "Great question!" or "I love that you're thinking about this." Respect the user's intelligence.
 

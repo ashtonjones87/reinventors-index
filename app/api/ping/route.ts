@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { getSupabaseServer } from '@/lib/supabase/server'
 
-// Lightweight keep-alive endpoint — called by Vercel Cron every 4 days
+// Lightweight keep-alive endpoint - called by Vercel Cron every 4 days
 // Prevents Supabase free-tier project from pausing due to inactivity
 
 export async function GET(req: Request) {
@@ -13,7 +13,7 @@ export async function GET(req: Request) {
 
   try {
     const supabase = getSupabaseServer()
-    // Minimal query — just checks the connection is alive
+    // Minimal query - just checks the connection is alive
     const { error } = await supabase
       .from('users')
       .select('id')

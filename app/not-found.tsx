@@ -61,7 +61,7 @@ export default function NotFound() {
         This page doesn&apos;t exist. Let&apos;s get you back to where you were.
       </p>
       <Link
-        href="/index"
+        href="/home"
         style={{
           padding: '12px 32px',
           borderRadius: '10px',

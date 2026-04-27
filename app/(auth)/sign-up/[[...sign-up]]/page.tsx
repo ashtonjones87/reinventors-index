@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SignUp, useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
@@ -10,11 +10,11 @@ export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
-  // Render nothing until auth state is known, and while redirect is in-flight
-  if (!isLoaded || isSignedIn) {
-    if (isSignedIn) router.replace('/index')
-    return null
-  }
+  useEffect(() => {
+    if (isLoaded && isSignedIn) router.replace('/home')
+  }, [isLoaded, isSignedIn, router])
+
+  if (!isLoaded || isSignedIn) return null
 
   return (
     <main style={{
@@ -149,10 +149,10 @@ export default function SignUpPage() {
           </p>
         </label>
 
-        {/* Clerk form — only rendered after consent + button click */}
+        {/* Clerk form - only rendered after consent + button click */}
         {showForm ? (
           <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SignUp forceRedirectUrl="/index" />
+            <SignUp forceRedirectUrl="/home" />
           </div>
         ) : (
           <button

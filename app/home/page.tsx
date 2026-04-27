@@ -71,7 +71,7 @@ export default async function CompanionPage() {
           We couldn&apos;t load your data. Please refresh the page to try again.
         </p>
         <a
-          href="/index"
+          href="/home"
           style={{
             padding: '12px 32px',
             borderRadius: '10px',

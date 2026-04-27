@@ -1,4 +1,4 @@
-* {
+﻿* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -279,7 +279,7 @@ html, body {
     font-family: var(--font-inter);
     padding-left: 4px;
   }
-  .privacy-content li::marker { color: #2A7B7B; }
+  .privacy-content li::marker { color: #1a1a1a; }
   .privacy-back-link:hover { color: #334a69 !important; }
 }
 
@@ -318,10 +318,10 @@ html, body {
   .mob-only   { display: flex !important; }
 }
 
-/* Shown on desktop/tablet, hidden on phones — used for header controls */
+/* Shown on desktop/tablet, hidden on phones - used for header controls */
 .phone-hide { display: flex; }
 
-/* Shown only on phones — used for hamburger */
+/* Shown only on phones - used for hamburger */
 .mob-only { display: none !important; }
 
 @media (max-width: 640px) {

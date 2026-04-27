@@ -8,7 +8,7 @@ export default function SignInPage() {
   const router = useRouter()
 
   if (!isLoaded || isSignedIn) {
-    if (isSignedIn) router.replace('/index')
+    if (isSignedIn) router.replace('/home')
     return null
   }
 
@@ -63,7 +63,7 @@ export default function SignInPage() {
 
         {/* Clerk sign-in — no consent gate needed here (consented on sign-up) */}
         <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <SignIn forceRedirectUrl="/index" />
+          <SignIn forceRedirectUrl="/home" />
         </div>
 
         {/* Restricted access + sign-up link */}

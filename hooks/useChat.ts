@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useCallback, useRef } from 'react'
 
@@ -89,7 +89,7 @@ export function useChat() {
         })
       }
 
-      // Stream closed without any data — treat as server error
+      // Stream closed without any data - treat as server error
       if (!hasReceivedData) {
         stripEmptyAssistant()
         setError({ message: 'No response received. Try again.', retryable: true, type: 'server' })
@@ -100,7 +100,7 @@ export function useChat() {
       // Keep any partial content that was streamed
       setMessages((prev) => {
         const last = prev[prev.length - 1]
-        // Only strip if truly empty — if partial content exists, leave it so user can see what arrived
+        // Only strip if truly empty - if partial content exists, leave it so user can see what arrived
         if (last?.role === 'assistant' && last.content === '') return prev.slice(0, -1)
         return prev
       })

@@ -1,4 +1,4 @@
-// Email access control — temporarily disabled.
+﻿// Email access control - temporarily disabled.
 // Uncomment to restrict signups to @insead.edu + exceptions.
 
 // const ALLOWED_DOMAIN = 'insead.edu'

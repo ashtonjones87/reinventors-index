@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
 
@@ -92,7 +92,7 @@ export default function SessionEndControls({ messages, onSessionSaved, detectedC
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {
       if (savedRef.current || messages.filter(m => m.role === 'user').length === 0) return
-      // Trigger best-effort save (beacon API — works even as page unloads)
+      // Trigger best-effort save (beacon API - works even as page unloads)
       try {
         navigator.sendBeacon(
           '/api/session-summary',

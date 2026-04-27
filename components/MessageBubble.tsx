@@ -1,4 +1,4 @@
-import ReactMarkdown from 'react-markdown'
+﻿import ReactMarkdown from 'react-markdown'
 import { Message } from '@/hooks/useChat'
 
 interface MessageBubbleProps {
@@ -8,7 +8,7 @@ interface MessageBubbleProps {
 // Convert em dashes and en dashes to plain hyphens
 function normaliseText(text: string): string {
   return text
-    .replace(/—/g, ' - ')  // em dash —
+    .replace(/-/g, ' - ')  // em dash -
     .replace(/–/g, ' - ')  // en dash –
     .replace(/ - /g, ' - ')     // normalise spacing around hyphens
 }
