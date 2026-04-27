@@ -1,23 +1,15 @@
-import { auth, currentUser } from '@clerk/nextjs/server'
+import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
 } from '@/lib/supabase/queries'
 import CompanionClient from '@/components/CompanionClient'
-import { isEmailAllowed } from '@/lib/allowlist'
 
 export default async function CompanionPage() {
   const { userId } = await auth()
 
   if (!userId) {
-    redirect('/sign-in')
-  }
-
-  // Belt-and-braces check: if a signed-in user somehow isn't on the allowlist, sign them out.
-  const user = await currentUser()
-  const email = user?.emailAddresses[0]?.emailAddress ?? ''
-  if (!isEmailAllowed(email)) {
     redirect('/sign-in')
   }
 

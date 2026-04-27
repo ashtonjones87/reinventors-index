@@ -1,8 +1,7 @@
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
-import { WebhookEvent, clerkClient } from '@clerk/nextjs/server'
+import { WebhookEvent } from '@clerk/nextjs/server'
 import { upsertUser, softDeleteUser, restoreDeletedUser } from '@/lib/supabase/queries'
-import { isEmailAllowed } from '@/lib/allowlist'
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
@@ -49,19 +48,6 @@ export async function POST(req: Request) {
 
     if (!email) {
       return new Response('No email found on user', { status: 400 })
-    }
-
-    // Block anyone who is not @insead.edu or on the exceptions list.
-    // Delete their Clerk account immediately so they cannot sign in.
-    if (!isEmailAllowed(email)) {
-      try {
-        const clerk = await clerkClient()
-        await clerk.users.deleteUser(id)
-        console.log(`Unauthorised signup blocked and deleted from Clerk: ${email}`)
-      } catch (deleteErr) {
-        console.error('Failed to delete unauthorised Clerk user:', deleteErr)
-      }
-      return new Response('OK', { status: 200 })
     }
 
     try {
