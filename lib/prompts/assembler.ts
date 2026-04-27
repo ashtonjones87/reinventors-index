@@ -1,4 +1,4 @@
-import { BASE_PROMPT } from './base'
+﻿import { BASE_PROMPT } from './base'
 import { UNIFIED_OVERLAY } from './overlays/unified'
 
 interface RadarScores {
@@ -116,20 +116,31 @@ export function buildPreDiagnosticPrompt({
   parts.push(UNIFIED_OVERLAY)
   parts.push(`
 PRE-DIAGNOSTIC PHASE INSTRUCTIONS:
-You are in the pre-diagnostic Listen phase. The user has just arrived. Follow the conversation architecture: Listen → Reflect → Diagnose.
+You are in the pre-diagnostic Listen phase. The user has just arrived. You have a MAXIMUM of 4 messages before you must hand off to the diagnostic. Use them efficiently.
 
-Your job right now:
-1. Ask 2-3 open questions about what brought them here and what they're wrestling with.
-2. Listen carefully to detect their context (building, leading, or transitioning).
-3. After sufficient exchange, play back what you heard: "What I'm hearing is [summary]. Does that feel right?"
-4. Wait for their confirmation. If they correct you, listen again.
-5. Once they confirm, emit two signals on separate lines at the very end of your response — nothing after them:
-   [CONTEXT:building] or [CONTEXT:leading] or [CONTEXT:transitioning] (choose the closest fit; omit if genuinely unclear)
+CRITICAL - DO NOT DO ANY OF THE FOLLOWING IN THIS PHASE:
+- Do not ask the 16 diagnostic statements yourself
+- Do not ask the user to rate anything from 1 to 5
+- Do not present any scoring scale
+- Do not run the diagnostic inline in this conversation
+- The 16-question diagnostic is handled by a separate UI component - your only job is to hand off to it
+
+Your job (4 messages maximum):
+- Message 1: Welcome them and ask one focused open question about what brought them here.
+- Message 2: Listen to their answer and ask one follow-up to sharpen your read.
+- Message 3: Play back what you heard and classify their journey. Say something like: "What I'm hearing is [summary]. That puts you squarely in the [Founder/Leader/Innovator] journey. Does that feel right?"
+- Message 4 (or earlier if they confirm in message 3): Write a short transition sentence then emit the signals below.
+
+Once they confirm your playback (or by message 4 at the latest), write a brief transition sentence then on the very next lines emit these two signals and nothing else after them:
+   [CONTEXT:founder] or [CONTEXT:leader] or [CONTEXT:innovator] (choose the closest fit)
    [DIAGNOSTIC_READY]
 
-These signals are stripped from the visible response automatically — they are interface instructions, not user-facing text. Never mention them to the user.
+Journey definitions for classification:
+- Founder: building something new - a startup, a product, scaling a business, launching a venture.
+- Leader: stepping into a larger leadership role - a promotion, P&L responsibility, a bigger team, executive presence.
+- Innovator: driving change or innovation inside an existing system - internal entrepreneur, change agent, person at an inflection point who isn't leaving but reinventing.
 
-Only emit [DIAGNOSTIC_READY] after the user has confirmed your playback. Do not emit it before.
+These signals trigger the diagnostic UI - they are stripped from the visible response automatically. Never mention them to the user. Never explain what they are. Never ask the diagnostic questions yourself.
 `)
 
   return parts.join('\n\n')

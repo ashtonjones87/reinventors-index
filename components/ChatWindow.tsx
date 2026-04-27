@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react'
 import { useChat } from '@/hooks/useChat'
@@ -6,7 +6,8 @@ import MessageBubble from './MessageBubble'
 import SessionEndControls from './SessionEndControls'
 
 const SIGNAL_DIAGNOSTIC_READY = '[DIAGNOSTIC_READY]'
-const SIGNAL_CONTEXT = /\[CONTEXT:(building|leading|transitioning)\]/
+const SIGNAL_CONTEXT = /\[CONTEXT:(founder|leader|innovator)\]/
+const PRE_DIAGNOSTIC_MAX_AI_MESSAGES = 4
 
 interface ChatWindowProps {
   radarScores: any
@@ -72,13 +73,23 @@ export default function ChatWindow({
     }
   }, [])
 
-  // Detect [DIAGNOSTIC_READY] and [CONTEXT:xxx] signals when stream ends
+  // Detect [DIAGNOSTIC_READY] / [CONTEXT:xxx] signals, or force-trigger after 4 AI messages
   useEffect(() => {
     if (!preDiagnostic || !onDiagnosticReady || isStreaming || diagnosticTriggeredRef.current) return
     const lastMsg = messages[messages.length - 1]
-    if (lastMsg?.role === 'assistant' && lastMsg.content.includes(SIGNAL_DIAGNOSTIC_READY)) {
-      const contextMatch = lastMsg.content.match(SIGNAL_CONTEXT)
-      const context = contextMatch ? contextMatch[1] : null
+    if (lastMsg?.role !== 'assistant') return
+
+    const hasReadySignal = lastMsg.content.includes(SIGNAL_DIAGNOSTIC_READY)
+    const aiMessages = messages.filter(m => m.role === 'assistant')
+    const hitCap = aiMessages.length >= PRE_DIAGNOSTIC_MAX_AI_MESSAGES
+
+    if (hasReadySignal || hitCap) {
+      // Find most recent context signal across all messages
+      let context: string | null = null
+      for (let i = messages.length - 1; i >= 0; i--) {
+        const match = messages[i].content.match(SIGNAL_CONTEXT)
+        if (match) { context = match[1]; break }
+      }
       diagnosticTriggeredRef.current = true
       onDiagnosticReady(context)
     }
@@ -155,12 +166,12 @@ export default function ChatWindow({
                     letterSpacing: '-0.2px',
                     marginBottom: '12px',
                   }}>
-                    You&apos;re here because something&apos;s shifting — or needs to.
+                    You&apos;re here because something&apos;s shifting - or needs to.
                   </p>
                   <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: '1.65', maxWidth: '440px', margin: '0 auto' }}>
                     Good. That&apos;s where the work starts.
                     Before we get into it, I want to understand where you are right now.
-                    Tell me what&apos;s going on — what brought you here today?
+                    Tell me what&apos;s going on - what brought you here today?
                   </p>
                 </>
               ) : (
@@ -182,7 +193,7 @@ export default function ChatWindow({
             </div>
           )}
 
-          {/* Messages — strip signals from display */}
+          {/* Messages - strip signals from display */}
           {messages.map((message, index) => (
             <MessageBubble
               key={index}
@@ -278,7 +289,7 @@ export default function ChatWindow({
         </div>
       </div>
 
-      {/* Session end controls — not shown in pre-diagnostic phase */}
+      {/* Session end controls - not shown in pre-diagnostic phase */}
       {!preDiagnostic && messages.length > 0 && !sessionEnded && (
         <div style={{
           backgroundColor: '#F5F3EE',
