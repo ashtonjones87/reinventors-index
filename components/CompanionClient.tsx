@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { UserButton } from '@clerk/nextjs'
@@ -510,7 +510,7 @@ export default function CompanionClient({
           </p>
         </div>
 
-        {/* Right controls — desktop */}
+        {/* Right controls - desktop */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {readinessScore !== null && (
             <span className="phone-hide" style={{
@@ -519,7 +519,7 @@ export default function CompanionClient({
               color: '#334a69',
               letterSpacing: '0.01em',
             }}>
-              {readinessScore}<span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
+              Readiness Score&nbsp;·&nbsp;{readinessScore}<span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
             </span>
           )}
           {radarScores && (
@@ -634,7 +634,7 @@ export default function CompanionClient({
               }}>
                 <div>
                   <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: '3px' }}>
-                    Mindset Index Score
+                    Readiness Score
                   </p>
                   <p style={{ fontFamily: 'var(--font-libre)', fontSize: '26px', fontWeight: '700', color: '#334a69', lineHeight: 1 }}>
                     {readinessScore}

@@ -1,7 +1,7 @@
-﻿import { auth } from '@clerk/nextjs/server'
+﻿import { auth, clerkClient } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { scoreResponses } from '@/lib/diagnostic'
-import { saveRadar } from '@/lib/supabase/queries'
+import { saveRadar, upsertUser } from '@/lib/supabase/queries'
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -11,13 +11,23 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Ensure the user row exists in Supabase (webhook may not have fired in dev)
+    try {
+      const client = await clerkClient()
+      const clerkUser = await client.users.getUser(userId)
+      const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
+      const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ')
+      await upsertUser(userId, email, name)
+    } catch {
+      // Non-fatal - upsert best-effort; if users row already exists this is fine
+    }
     const body = await req.json()
-    const { answers } = body
+    const { answers, context } = body
 
-    // Validate - must be exactly 16 answers, each between 1 and 5
-    if (!Array.isArray(answers) || answers.length !== 16) {
+    // Validate - must be exactly 4 answers, each between 1 and 5
+    if (!Array.isArray(answers) || answers.length !== 4) {
       return NextResponse.json(
-        { error: 'Must provide exactly 16 answers' },
+        { error: 'Must provide exactly 4 answers' },
         { status: 400 }
       )
     }
@@ -58,7 +68,8 @@ export async function POST(req: NextRequest) {
         rangeLeadership,
         rangeAwareness,
       },
-      rawResponses
+      rawResponses,
+      context ?? null
     )
 
     // Return scores immediately so frontend can render radar without re-fetching

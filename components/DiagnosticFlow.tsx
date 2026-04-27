@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { DIAGNOSTIC_STATEMENTS, DIMENSION_FRAMINGS } from '@/lib/diagnostic'
@@ -40,11 +40,11 @@ function getAcknowledgement(index: number) {
 }
 
 function getDimensionForIndex(index: number) {
-  return DIMENSIONS[Math.floor(index / 4)]
+  return DIMENSIONS[index]
 }
 
-function isFirstInDimension(index: number) {
-  return index % 4 === 0
+function isFirstInDimension(_index: number) {
+  return true // one question per dimension, so always show framing
 }
 
 export default function DiagnosticFlow({ detectedContext, onComplete }: DiagnosticFlowProps) {
@@ -69,7 +69,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           typeof parsed?.savedIndex === 'number' &&
           Array.isArray(parsed?.savedAnswers) &&
           parsed.savedIndex >= 0 &&
-          parsed.savedIndex <= 15 &&
+          parsed.savedIndex <= 3 &&
           parsed.savedAnswers.length === parsed.savedIndex
         ) {
           setCurrentIndex(parsed.savedIndex)
@@ -92,7 +92,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           savedAnswers: answers,
         }))
       } catch {
-        // sessionStorage unavailable (private browsing quota exceeded) — ignore
+        // sessionStorage unavailable (private browsing quota exceeded) - ignore
       }
     }
   }, [currentIndex, answers])
@@ -108,7 +108,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
       const res = await fetch('/api/diagnostic', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ answers: finalAnswers }),
+        body: JSON.stringify({ answers: finalAnswers, context }),
         signal: controller.signal,
       })
 
@@ -149,7 +149,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
     const newAnswers = [...answers, rating]
 
     setTimeout(async () => {
-      if (currentIndex === 15) {
+      if (currentIndex === 3) {
         await submitAnswers(newAnswers)
       } else {
         setAnswers(newAnswers)
@@ -161,7 +161,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
   }
 
   async function handleRetrySubmit() {
-    if (isSubmitting || answers.length < 16) return
+    if (isSubmitting || answers.length < 4) return
     await submitAnswers(answers)
   }
 
@@ -169,7 +169,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
   const currentDimension = getDimensionForIndex(currentIndex)
   const showFraming = isFirstInDimension(currentIndex)
   const framingText = DIMENSION_FRAMINGS[context][currentDimension]
-  const progress = Math.round((currentIndex / 16) * 100)
+  const progress = Math.round((currentIndex / 4) * 100)
 
   return (
     <div style={{ width: '100%', maxWidth: '720px', margin: '0 auto' }}>
@@ -192,7 +192,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           Mindset Diagnostic
         </p>
         <p style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: '500' }}>
-          {currentIndex} <span style={{ opacity: 0.5 }}>/ 16</span>
+          {currentIndex + 1} <span style={{ opacity: 0.5 }}>/ 4</span>
         </p>
       </div>
 

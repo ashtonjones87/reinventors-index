@@ -134,7 +134,8 @@ export async function saveRadar(
     rangeLeadership: number
     rangeAwareness: number
   },
-  rawResponses: { question_id: number; answer: number }[]
+  rawResponses: { question_id: number; answer: number }[],
+  context?: string | null
 ) {
   const supabase = getSupabaseServer()
   const { error } = await supabase.from('diagnostics').insert({
@@ -146,6 +147,7 @@ export async function saveRadar(
     range_leadership: readinessData.rangeLeadership,
     range_awareness: readinessData.rangeAwareness,
     raw_responses: rawResponses,
+    ...(context ? { context_detected: context } : {}),
   })
   if (error) throw error
 }
