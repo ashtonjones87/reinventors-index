@@ -17,7 +17,7 @@ export interface ChatError {
 
 const STREAM_TIMEOUT_MS = 30_000
 
-export function useChat() {
+export function useChat(options?: { preDiagnosticContext?: string }) {
   const [messages, setMessages] = useState<Message[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<ChatError | null>(null)
@@ -47,7 +47,10 @@ export function useChat() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: messagesForApi }),
+        body: JSON.stringify({
+          messages: messagesForApi,
+          ...(options?.preDiagnosticContext ? { preDiagnosticContext: options.preDiagnosticContext } : {}),
+        }),
         signal: abortRef.current.signal,
       })
 

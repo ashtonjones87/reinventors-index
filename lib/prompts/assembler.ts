@@ -25,6 +25,8 @@ interface SessionSummary {
 interface BuildSystemPromptArgs {
   previousSummary?: SessionSummary | null
   radarScores?: RadarScores | null
+  contextDetected?: string | null
+  preDiagnosticContext?: string | null
 }
 
 function formatPreviousSummary(summary: SessionSummary): string {
@@ -86,11 +88,28 @@ Reference these when recommending frameworks. The strongest poles show where the
 export function buildSystemPrompt({
   previousSummary,
   radarScores,
+  contextDetected,
+  preDiagnosticContext,
 }: BuildSystemPromptArgs): string {
   const parts: string[] = []
 
   if (previousSummary) {
     parts.push(formatPreviousSummary(previousSummary))
+  }
+
+  // Inject the user's detected journey and pre-diagnostic conversation
+  // so the AI starts with full context from the orienting chat
+  if (contextDetected || preDiagnosticContext) {
+    const contextParts: string[] = ['PRE-DIAGNOSTIC CONTEXT:']
+    if (contextDetected) {
+      contextParts.push(`Detected journey: ${contextDetected}`)
+      contextParts.push(`Use this to frame your conversation. The user has already been oriented to the ${contextDetected} journey - do not re-introduce or re-explain it.`)
+    }
+    if (preDiagnosticContext) {
+      contextParts.push(`\nOrienting conversation before the diagnostic:\n${preDiagnosticContext}`)
+      contextParts.push(`\nReference this conversation naturally - do not repeat it back verbatim, but use what was shared as your starting point. The user should feel that the conversation continues, not that it has reset.`)
+    }
+    parts.push(contextParts.join('\n'))
   }
 
   parts.push(BASE_PROMPT)

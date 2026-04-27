@@ -42,11 +42,26 @@ export default function CompanionClient({
   const [isViewingFromChat, setIsViewingFromChat] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [detectedContext, setDetectedContext] = useState<string | null>(null)
+  const [preDiagnosticContext, setPreDiagnosticContext] = useState<string | null>(null)
 
   function closeMenu() { setMenuOpen(false) }
 
-  function handleDiagnosticReady(context: string | null) {
+  function handleDiagnosticReady(context: string | null, messages?: { role: string; content: string }[]) {
     setDetectedContext(context)
+    if (messages && messages.length > 0) {
+      // Format the conversation as a compact string for the system prompt
+      const transcript = messages
+        .map(m => `${m.role === 'user' ? 'User' : 'Companion'}: ${m.content.replace(/\[CONTEXT:[^\]]+\]/gi, '').replace(/\[DIAGNOSTIC_READY\]/gi, '').trim()}`)
+        .filter(line => !line.endsWith(': '))
+        .join('\n')
+      setPreDiagnosticContext(transcript)
+    }
+    setPhase('diagnostic')
+  }
+
+  function handleSkipToDiagnostic() {
+    setDetectedContext(null)
+    setPreDiagnosticContext(null)
     setPhase('diagnostic')
   }
 
@@ -110,8 +125,30 @@ export default function CompanionClient({
               Index
             </p>
           </div>
-          <div className="phone-hide">
-            <UserButton />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button
+              onClick={handleSkipToDiagnostic}
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                color: '#9CA3AF',
+                background: 'none',
+                border: '1px solid #D1D5DB',
+                borderRadius: '999px',
+                padding: '5px 14px',
+                cursor: 'pointer',
+                fontFamily: 'var(--font-inter)',
+                letterSpacing: '0.01em',
+                transition: 'all 0.15s',
+              }}
+              onMouseOver={e => { e.currentTarget.style.color = '#334a69'; e.currentTarget.style.borderColor = '#334a69' }}
+              onMouseOut={e => { e.currentTarget.style.color = '#9CA3AF'; e.currentTarget.style.borderColor = '#D1D5DB' }}
+            >
+              Skip to diagnostic
+            </button>
+            <div className="phone-hide">
+              <UserButton />
+            </div>
           </div>
           <button
             className="mob-only"
@@ -207,17 +244,23 @@ export default function CompanionClient({
   }
 
   // ── POST-DIAGNOSTIC RADAR VIEW ──────────────────────────────
-  if (showRadar && radarScores) {
-    return (
-      <div style={{
-        height: '100vh',
-        overflowY: 'scroll',
-        backgroundColor: '#F5F3EE',
-        WebkitOverflowScrolling: 'touch',
-      }}>
-        <div
-          className="md-px sm-px"
-          style={{
+  // ── CHAT VIEW (+ radar overlay) ────────────────────────────
+  return (
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', margin: 0, padding: 0, backgroundColor: '#F5F3EE', position: 'relative' }}>
+
+      {/* ── RADAR OVERLAY — rendered on top, chat stays mounted beneath ── */}
+      {showRadar && radarScores && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 100,
+          overflowY: 'scroll',
+          backgroundColor: '#F5F3EE',
+          WebkitOverflowScrolling: 'touch',
+        }}>
+          <div
+            className="md-px sm-px"
+            style={{
             maxWidth: '640px',
             margin: '0 auto',
             padding: '52px 24px 72px',
@@ -466,12 +509,7 @@ export default function CompanionClient({
 
         </div>
       </div>
-    )
-  }
-
-  // ── CHAT VIEW ──────────────────────────────────────────────
-  return (
-    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', margin: 0, padding: 0, backgroundColor: '#F5F3EE', position: 'relative' }}>
+      )}
 
       {/* Header */}
       <div
@@ -720,6 +758,7 @@ export default function CompanionClient({
           latestSummary={latestSummary}
           previousRadar={prevRadarScores}
           detectedContext={detectedContext}
+          preDiagnosticContext={preDiagnosticContext}
         />
       </div>
     </div>

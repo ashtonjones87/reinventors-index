@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json()
-    const { messages } = body
+    const { messages, preDiagnosticContext } = body
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return new Response('Invalid messages', { status: 400 })
@@ -43,7 +43,12 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = diagnostics.length === 0
       ? buildPreDiagnosticPrompt({ previousSummary: latestSummary })
-      : buildSystemPrompt({ previousSummary: latestSummary, radarScores: currentRadar })
+      : buildSystemPrompt({
+          previousSummary: latestSummary,
+          radarScores: currentRadar,
+          contextDetected: currentRadar?.context_detected ?? null,
+          preDiagnosticContext: typeof preDiagnosticContext === 'string' ? preDiagnosticContext : null,
+        })
 
     const anthropic = createAnthropicClient()
     const abortController = new AbortController()
