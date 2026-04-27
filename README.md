@@ -1,3 +1,23 @@
+# The Reinventor's™ Mindset Index
+
+An AI coaching tool built on the methodology of Ashton Jones, drawn from *Bold Water: Transform From Within*.
+
+## Environment Variables
+
+Create a `.env.local` file in the project root with the following variables:
+
+| Variable | Where to find it |
+|----------|------------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase Dashboard → Settings → API → Project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase Dashboard → Settings → API → anon public key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Dashboard → Settings → API → service_role key |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk Dashboard → API Keys |
+| `CLERK_SECRET_KEY` | Clerk Dashboard → API Keys |
+| `CLERK_WEBHOOK_SECRET` | Clerk Dashboard → Webhooks → signing secret |
+| `ANTHROPIC_API_KEY` | Anthropic Console → API Keys |
+
+## Getting Started
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
