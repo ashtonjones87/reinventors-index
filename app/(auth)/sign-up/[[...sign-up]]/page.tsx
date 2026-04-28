@@ -45,10 +45,20 @@ export default function SignUpPage() {
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    // Restore showForm from sessionStorage so OTP remounts don't flash the consent box
+    if (sessionStorage.getItem('signup_in_progress') === 'true') {
+      setShowForm(true)
+      setConsented(true)
+    }
+  }, [])
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) router.replace('/home')
+    if (isLoaded && isSignedIn) {
+      sessionStorage.removeItem('signup_in_progress')
+      router.replace('/home')
+    }
   }, [isLoaded, isSignedIn, router])
 
   if (isSignedIn) return null
@@ -160,7 +170,7 @@ export default function SignUpPage() {
           </div>
         ) : (
           <button
-            onClick={() => { if (consented) setShowForm(true) }}
+            onClick={() => { if (consented) { sessionStorage.setItem('signup_in_progress', 'true'); setShowForm(true) } }}
             disabled={!consented}
             style={{
               width: '100%',
