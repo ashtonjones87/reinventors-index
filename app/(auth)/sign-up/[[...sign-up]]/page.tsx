@@ -39,10 +39,13 @@ const BrandHeader = () => (
 )
 
 export default function SignUpPage() {
+  const [mounted, setMounted] = useState(false)
   const [consented, setConsented] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
+
+  useEffect(() => { setMounted(true) }, [])
 
   useEffect(() => {
     if (isLoaded && isSignedIn) router.replace('/home')
@@ -50,8 +53,7 @@ export default function SignUpPage() {
 
   if (isSignedIn) return null
 
-  // Show brand header while Clerk loads — prevents blank flash
-  if (!isLoaded) {
+  if (!mounted || !isLoaded) {
     return (
       <main style={{
         minHeight: '100vh',
@@ -181,13 +183,6 @@ export default function SignUpPage() {
             Create your account
           </button>
         )}
-
-        <p style={{ marginTop: '20px', fontSize: '12px', color: '#9CA3AF', fontFamily: 'var(--font-inter)' }}>
-          Already have an account?{' '}
-          <a href="/sign-in" style={{ color: '#334a69', fontWeight: '600', textDecoration: 'none' }}>
-            Sign in
-          </a>
-        </p>
       </div>
     </main>
   )

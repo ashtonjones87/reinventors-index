@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { SignIn, useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
@@ -38,16 +39,18 @@ const BrandHeader = () => (
 )
 
 export default function SignInPage() {
+  const [mounted, setMounted] = useState(false)
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
+
+  useEffect(() => { setMounted(true) }, [])
 
   if (isSignedIn) {
     router.replace('/home')
     return null
   }
 
-  // Show brand header while Clerk loads — prevents blank flash
-  if (!isLoaded) {
+  if (!mounted || !isLoaded) {
     return (
       <main style={{
         minHeight: '100vh',
@@ -85,13 +88,6 @@ export default function SignInPage() {
         <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
           <SignIn forceRedirectUrl="/home" />
         </div>
-
-        <p style={{ marginTop: '20px', fontSize: '12px', color: '#9CA3AF', fontFamily: 'var(--font-inter)' }}>
-          New here?{' '}
-          <a href="/sign-up" style={{ color: '#334a69', fontWeight: '600', textDecoration: 'none' }}>
-            Create an account
-          </a>
-        </p>
       </div>
     </main>
   )
