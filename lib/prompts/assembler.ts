@@ -93,6 +93,16 @@ export function buildSystemPrompt({
 }: BuildSystemPromptArgs): string {
   const parts: string[] = []
 
+  // This block must come first - it overrides Section 5 of the base prompt
+  parts.push(`DIAGNOSTIC STATUS - READ THIS FIRST:
+The user has already completed the 16-question diagnostic. The radar scores are provided below.
+DO NOT ask the user to complete the diagnostic again.
+DO NOT present any of the 16 statements.
+DO NOT ask the user to rate anything on a scale of 1 to 5.
+DO NOT ask them to type numbers in the chat.
+The diagnostic phase is over. You are now in the coaching conversation phase.
+Use the radar scores provided to inform your recommendations - do not re-collect them.`)
+
   if (previousSummary) {
     parts.push(formatPreviousSummary(previousSummary))
   }
