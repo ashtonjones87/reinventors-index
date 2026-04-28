@@ -19,7 +19,7 @@ interface ChatWindowProps {
   detectedContext?: string | null
   preDiagnosticContext?: string | null
   preDiagnostic?: boolean
-  onDiagnosticReady?: (context: string | null) => void
+  onDiagnosticReady?: (context: string | null, messages: { role: string; content: string }[]) => void
 }
 
 function stripSignals(text: string): string {
@@ -95,7 +95,10 @@ export default function ChatWindow({
         if (match) { context = match[1]; break }
       }
       diagnosticTriggeredRef.current = true
-      onDiagnosticReady(context)
+      // Delay so user can read the final AI message before the diagnostic starts
+      setTimeout(() => {
+        onDiagnosticReady(context, messages)
+      }, 3500)
     }
   }, [messages, isStreaming, preDiagnostic, onDiagnosticReady])
 
