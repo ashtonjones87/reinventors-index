@@ -382,9 +382,13 @@ export default function ActionPlansDropdown() {
                           )
                         }
                       } else if (isDay) {
+                        // Split "Day X-Y - Label: content" so only the prefix is navy bold
+                        const colonIdx = cleanLine.indexOf(':')
+                        const prefix = colonIdx !== -1 ? cleanLine.slice(0, colonIdx + 1) : cleanLine
+                        const rest = colonIdx !== -1 ? cleanLine.slice(colonIdx + 1) : ''
                         elements.push(
-                          <p key={i} style={{ fontSize: '14px', fontWeight: '700', color: '#334a69', fontFamily: 'var(--font-inter)', lineHeight: '1.7', marginTop: '16px', marginBottom: '4px' }}>
-                            {renderBoldLine(cleanLine)}
+                          <p key={i} style={{ fontSize: '14px', color: '#1a1a1a', fontFamily: 'var(--font-inter)', lineHeight: '1.7', marginTop: '16px', marginBottom: '4px' }}>
+                            <strong style={{ color: '#334a69' }}>{prefix}</strong>{rest}
                           </p>
                         )
                       } else {

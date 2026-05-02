@@ -53,7 +53,11 @@ function actionPlanToHTML(text: string): string {
       html += `<p class="action-label">Your Practical Action This Week</p>`
       if (remaining) html += `<p class="body-line">${remaining}</p>`
     } else if (/^day\s+\d/i.test(cleanLine)) {
-      html += `<p class="day-line">${formatted}</p>`
+      // Only the "Day X-Y - Label:" prefix is navy bold; content after colon is normal black
+      const colonIdx = cleanLine.indexOf(':')
+      const prefix = colonIdx !== -1 ? escapeHTML(cleanLine.slice(0, colonIdx + 1)) : escapeHTML(cleanLine)
+      const rest = colonIdx !== -1 ? escapeHTML(cleanLine.slice(colonIdx + 1)) : ''
+      html += `<p class="day-line"><strong>${prefix}</strong>${rest}</p>`
     } else {
       html += `<p class="body-line">${formatted}</p>`
     }
