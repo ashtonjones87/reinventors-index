@@ -55,12 +55,14 @@ export async function POST(req: NextRequest) {
     }, transcript)
 
     // Also persist as an action plan (auto-deletes oldest if user already has 3)
+    // Use the raw action plan block from the chat rather than the AI-summarised version
     try {
+      const rawPlanText = extractActionPlanText(messages)
       await saveActionPlan(userId, {
         context_detected: context_detected ?? summaryData.context_detected ?? null,
         framework_explored: summaryData.framework_explored,
         core_tension: summaryData.core_tension,
-        practical_action: summaryData.practical_action,
+        practical_action: rawPlanText ?? summaryData.practical_action,
         open_questions: summaryData.open_questions,
         shift_observed: summaryData.shift_observed,
       })
@@ -78,6 +80,23 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+// Extracts the raw "Your practical action this week:" block from the last
+// assistant message that contains it, stripping the newsletter line.
+function extractActionPlanText(messages: { role: string; content: string }[]): string | null {
+  const assistantMessages = messages.filter(m => m.role === 'assistant')
+  for (let i = assistantMessages.length - 1; i >= 0; i--) {
+    const content = assistantMessages[i].content
+    const idx = content.search(/your practical action this week/i)
+    if (idx !== -1) {
+      let planText = content.slice(idx)
+      // Strip the newsletter line
+      planText = planText.replace(/\n*\*?Want to go deeper\?[^\n]*/gi, '').trim()
+      return planText
+    }
+  }
+  return null
 }
 
 async function attemptSummaryGeneration(

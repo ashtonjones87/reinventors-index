@@ -3,6 +3,21 @@
 import { useEffect, useRef, useState } from 'react'
 import { type ActionPlan, formatPlanDate, downloadActionPlanPDF } from '@/lib/actionPlanUtils'
 
+// Renders a line that may contain inline **bold** segments
+function renderBoldLine(line: string): React.ReactNode {
+  const parts = line.split(/(\*\*[^*]+\*\*)/)
+  if (parts.length === 1) return line
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith('**') && part.endsWith('**')
+          ? <strong key={i}>{part.slice(2, -2)}</strong>
+          : <span key={i}>{part}</span>
+      )}
+    </>
+  )
+}
+
 export default function ActionPlansDropdown() {
   const [isOpen, setIsOpen] = useState(false)
   const [plans, setPlans] = useState<ActionPlan[] | null>(null) // null = not yet fetched
@@ -332,18 +347,29 @@ export default function ActionPlansDropdown() {
               )}
 
               <div style={{ marginBottom: '24px' }}>
-                <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-inter)', marginBottom: '8px' }}>
-                  Your Practical Action
-                </p>
                 <div style={{
                   backgroundColor: '#F5F3EE',
                   borderLeft: '3px solid #334a69',
                   padding: '16px 20px',
                   borderRadius: '0 10px 10px 0',
                 }}>
-                  <p style={{ fontSize: '15px', color: '#1a1a1a', lineHeight: '1.7', fontFamily: 'var(--font-inter)' }}>
-                    {selectedPlan.practical_action}
-                  </p>
+                  {selectedPlan.practical_action.split('\n').map((line, i) => {
+                    const isLabel = /^your practical action/i.test(line)
+                    return (
+                      <p key={i} style={{
+                        fontSize: isLabel ? '10px' : '14px',
+                        fontWeight: isLabel ? '700' : '400',
+                        letterSpacing: isLabel ? '0.14em' : '0',
+                        textTransform: isLabel ? 'uppercase' : 'none',
+                        color: '#1a1a1a',
+                        fontFamily: 'var(--font-inter)',
+                        lineHeight: '1.75',
+                        marginBottom: line === '' ? '10px' : '1px',
+                      }}>
+                        {renderBoldLine(line)}
+                      </p>
+                    )
+                  })}
                 </div>
               </div>
 

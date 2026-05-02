@@ -31,6 +31,32 @@ function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
+// Converts the raw action plan text (markdown-ish) to clean HTML for the PDF.
+// Handles: **bold** inline, blank lines → paragraph breaks, plain lines → <p>
+function actionPlanToHTML(text: string): string {
+  const lines = text.split('\n')
+  let html = ''
+  for (const line of lines) {
+    if (line.trim() === '') {
+      html += '<br>'
+      continue
+    }
+    // Convert **bold** segments
+    const formatted = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Style the label line differently
+    if (/^your practical action/i.test(line)) {
+      html += `<p class="action-label">${formatted}</p>`
+    } else if (/^day\s+1/i.test(line.replace(/<[^>]+>/g, ''))) {
+      html += `<p class="day-line">${formatted}</p>`
+    } else if (/^day\s+8/i.test(line.replace(/<[^>]+>/g, ''))) {
+      html += `<p class="day-line">${formatted}</p>`
+    } else {
+      html += `<p class="body-line">${formatted}</p>`
+    }
+  }
+  return html
+}
+
 export function downloadActionPlanPDF(plan: ActionPlan): void {
   const date = formatPlanDate(plan.created_at)
 
@@ -64,8 +90,32 @@ export function downloadActionPlanPDF(plan: ActionPlan): void {
     .action-box {
       background: #F5F3EE;
       border-left: 3px solid #334a69;
-      padding: 18px 22px;
       border-radius: 0 8px 8px 0;
+      padding: 18px 22px;
+    }
+    .action-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #9CA3AF;
+      font-family: system-ui, sans-serif;
+      margin: 0 0 12px 0;
+    }
+    .body-line {
+      font-size: 15px;
+      color: #1a1a1a;
+      margin: 0 0 6px 0;
+      line-height: 1.75;
+    }
+    .day-line {
+      font-size: 14px;
+      color: #334a69;
+      margin: 14px 0 4px 0;
+      line-height: 1.65;
+    }
+    .day-line strong {
+      font-weight: 700;
     }
     .footer {
       margin-top: 48px;
@@ -85,8 +135,7 @@ export function downloadActionPlanPDF(plan: ActionPlan): void {
   <p class="meta">${date}${plan.context_detected ? ` \u00b7 ${capitalize(escapeHTML(plan.context_detected))} journey` : ''}</p>
   ${plan.core_tension ? `<div class="section"><p class="label">Core Tension</p><p class="content">${escapeHTML(plan.core_tension)}</p></div>` : ''}
   <div class="section">
-    <p class="label">Your Practical Action This Week</p>
-    <div class="action-box"><p class="content">${escapeHTML(plan.practical_action)}</p></div>
+    <div class="action-box">${actionPlanToHTML(plan.practical_action)}</div>
   </div>
   ${plan.open_questions ? `<div class="section"><p class="label">Open Questions</p><p class="content">${escapeHTML(plan.open_questions)}</p></div>` : ''}
   ${plan.shift_observed ? `<div class="section"><p class="label">Shift Observed</p><p class="content">${escapeHTML(plan.shift_observed)}</p></div>` : ''}
