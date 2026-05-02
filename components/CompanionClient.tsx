@@ -331,7 +331,7 @@ export default function CompanionClient({
                 marginBottom: '10px',
                 opacity: 0.7,
               }}>
-                Reinventor&apos;s Mindset Index Score
+                Adaptive Range Score
               </p>
               <p style={{
                 fontFamily: 'var(--font-libre)',
@@ -394,6 +394,12 @@ export default function CompanionClient({
                 { label: 'Awareness', range: rangeScores.rangeAwareness, poleA: 'Cognitive', poleB: 'Purpose', scoreA: radarScores.cognitive, scoreB: radarScores.spiritual_purpose },
               ].map((dim) => {
                 const leansPole = dim.scoreA >= dim.scoreB ? dim.poleA : dim.poleB
+                const underdevelopedPole = dim.scoreA <= dim.scoreB ? dim.poleA : dim.poleB
+                const polarisationLabel = dim.range < 1.0
+                  ? 'Balanced'
+                  : dim.range <= 2.0
+                  ? `Leans ${leansPole}`
+                  : `Strongly ${leansPole}`
                 const maxRange = Math.max(
                   rangeScores.rangeDecisionMaking,
                   rangeScores.rangeBehaviour,
@@ -421,20 +427,16 @@ export default function CompanionClient({
                       marginBottom: '6px',
                       fontFamily: 'var(--font-libre)',
                     }}>
-                      Leans {leansPole}
+                      {polarisationLabel}
                     </p>
                     <p style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '4px' }}>
                       {dim.poleA}: {dim.scoreA.toFixed(1)} · {dim.poleB}: {dim.scoreB.toFixed(1)}
                     </p>
-                    {isBiggest ? (
-                      <p style={{ fontSize: '12px', fontWeight: '600', color: '#C17D10' }}>
-                        Range: {dim.range.toFixed(1)}, biggest growth opportunity
-                      </p>
-                    ) : (
-                      <p style={{ fontSize: '12px', color: '#B5ADA3' }}>
-                        Range: {dim.range.toFixed(1)}
-                      </p>
-                    )}
+                    <p style={{ fontSize: '12px', fontWeight: isBiggest ? '600' : '400', color: isBiggest ? '#C17D10' : '#B5ADA3' }}>
+                      {dim.range === 0
+                        ? 'Polarisation: 0.0 — both poles equally developed'
+                        : `Polarisation: ${dim.range.toFixed(1)} — your underdeveloped pole is ${underdevelopedPole}`}
+                    </p>
                   </div>
                 )
               })}
@@ -612,7 +614,7 @@ export default function CompanionClient({
               color: '#334a69',
               letterSpacing: '0.01em',
             }}>
-              Readiness Score&nbsp;·&nbsp;{readinessScore}<span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
+              Adaptive Range Score&nbsp;·&nbsp;{readinessScore}<span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
             </span>
           )}
           {radarScores && (
@@ -730,10 +732,7 @@ export default function CompanionClient({
               }}>
                 <div>
                   <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: '3px' }}>
-                    Readiness Score
-                  </p>
-                  <p style={{ fontFamily: 'var(--font-libre)', fontSize: '26px', fontWeight: '700', color: '#334a69', lineHeight: 1 }}>
-                    {readinessScore}
+                    Adaptive Range Score
                     <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: '400' }}> / 10</span>
                   </p>
                 </div>

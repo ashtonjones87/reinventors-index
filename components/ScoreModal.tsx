@@ -51,7 +51,7 @@ const Body = ({ children }: { children: React.ReactNode }) => (
 function readinessLabel(score: number): string {
   if (score >= 8) return 'Highly adaptive'
   if (score >= 6) return 'Solidly flexible'
-  if (score >= 4) return 'Developing range'
+  if (score >= 4) return 'Developing flexibility'
   return 'Strongly polarised'
 }
 
@@ -111,8 +111,8 @@ function dimensionExplanation(dim: DimDef): string {
 
   const explanation = explanations[dim.label]?.[lean] ?? ''
   const rangeNote = Number(gap) <= 0.5
-    ? `Your scores on both poles are very close (${dim.poleA}: ${dim.scoreA.toFixed(1)}, ${dim.poleB}: ${dim.scoreB.toFixed(1)}), meaning you're genuinely balanced in this dimension.`
-    : `There's a gap of ${gap} between ${lean} (${lean === dim.poleA ? dim.scoreA.toFixed(1) : dim.scoreB.toFixed(1)}) and ${other} (${lean === dim.poleA ? dim.scoreB.toFixed(1) : dim.scoreA.toFixed(1)}) - this is where your growth work lives.`
+    ? `Your scores on both poles are very close (${dim.poleA}: ${dim.scoreA.toFixed(1)}, ${dim.poleB}: ${dim.scoreB.toFixed(1)}) — both poles are equally developed.`
+    : `Polarisation: ${gap} — your underdeveloped pole is ${other} (${other === dim.poleA ? dim.scoreA.toFixed(1) : dim.scoreB.toFixed(1)}). This is where your growth work lives.`
 
   return `${explanation} ${rangeNote}`
 }
@@ -223,7 +223,7 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
         <div style={{ width: '32px', height: '2px', background: 'linear-gradient(90deg, #334a69, #2A7B7B)', borderRadius: '999px', marginBottom: '20px', opacity: 0.5 }} />
 
         {/* Readiness Score */}
-        <H>Readiness Score - {readinessScore}/10 - {readinessLabel(readinessScore)}</H>
+        <H>Adaptive Range Score — {readinessScore}/10 — {readinessLabel(readinessScore)}</H>
         <Body>{readinessExplanation(readinessScore)}</Body>
 
         {/* Journey */}
@@ -232,21 +232,29 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
 
         {/* Dimensions */}
         <H>Your Four Dimensions</H>
-        {dims.map(dim => (
-          <div key={dim.label} style={{ marginBottom: '14px' }}>
-            <p style={{ fontWeight: '700', color: '#334a69', fontSize: '13px', marginBottom: '3px' }}>
-              {dim.label} - Leans {dim.scoreA >= dim.scoreB ? dim.poleA : dim.poleB}
-            </p>
-            <Body>{dimensionExplanation(dim)}</Body>
-          </div>
-        ))}
+        {dims.map(dim => {
+          const leansPole = dim.scoreA >= dim.scoreB ? dim.poleA : dim.poleB
+          const polarisationLabel = dim.range < 1.0
+            ? 'Balanced'
+            : dim.range <= 2.0
+            ? `Leans ${leansPole}`
+            : `Strongly ${leansPole}`
+          return (
+            <div key={dim.label} style={{ marginBottom: '14px' }}>
+              <p style={{ fontWeight: '700', color: '#334a69', fontSize: '13px', marginBottom: '3px' }}>
+                {dim.label} — {polarisationLabel}
+              </p>
+              <Body>{dimensionExplanation(dim)}</Body>
+            </div>
+          )
+        })}
 
         {/* Growth Edge */}
         {growthEdge && (
           <>
             <H>Your Biggest Growth Edge</H>
             <Body>
-              <strong style={{ color: '#334a69' }}>{growthEdge.label}</strong> has your highest range score ({growthEdge.range.toFixed(1)}), meaning the gap between your two poles in this dimension is the widest. This is where the most leverage sits - the work you do here will ripple across the others.
+              <strong style={{ color: '#334a69' }}>{growthEdge.label}</strong> has your highest polarisation ({growthEdge.range.toFixed(1)}) — that’s where one pole has crowded out the other. This is where the most leverage sits — the work you do here will ripple across the others.
             </Body>
           </>
         )}
@@ -257,7 +265,7 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
             <H>What Shifted Since Last Time</H>
             <Body>
               {prevRadarScores.readiness_score !== undefined && (
-                <>Your Readiness Score moved from <strong style={{ color: '#334a69' }}>{prevRadarScores.readiness_score}/10</strong> to <strong style={{ color: '#334a69' }}>{readinessScore}/10</strong> ({readinessScore >= prevRadarScores.readiness_score ? '+' : ''}{(readinessScore - prevRadarScores.readiness_score).toFixed(1)}). </>
+                <>Your Adaptive Range Score moved from <strong style={{ color: '#334a69' }}>{prevRadarScores.readiness_score}/10</strong> to <strong style={{ color: '#334a69' }}>{readinessScore}/10</strong> ({readinessScore >= prevRadarScores.readiness_score ? '+' : ''}{(readinessScore - prevRadarScores.readiness_score).toFixed(1)}). </>
               )}
               {shiftExplanation(radarScores, prevRadarScores)}
             </Body>

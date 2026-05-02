@@ -68,11 +68,11 @@ function formatRadarContext(scores: RadarScores & {
   const weakest = sorted.slice(-2).map((p) => p.name).join(', ')
 
   const readinessLine = scores.readiness_score
-    ? `Reinventor's Readiness Score: ${scores.readiness_score}/10`
+    ? `Adaptive Range Score: ${scores.readiness_score}/10`
     : ''
 
   const rangeLines = scores.range_decision_making !== undefined
-    ? `Range scores - Decision Making: ${scores.range_decision_making} | Behaviour: ${scores.range_behaviour} | Leadership: ${scores.range_leadership} | Awareness: ${scores.range_awareness}`
+    ? `Polarisation scores - Decision Making: ${scores.range_decision_making} | Behaviour: ${scores.range_behaviour} | Leadership: ${scores.range_leadership} | Awareness: ${scores.range_awareness}`
     : ''
 
   return `
@@ -82,7 +82,7 @@ ${rangeLines}
 User's radar scores: ${poles.map((p) => `${p.name}: ${p.score}`).join(' | ')}
 Strongest poles: ${strongest}
 Weakest poles: ${weakest}
-Reference these when recommending frameworks. The strongest poles show where the user is comfortable. The weakest poles show where the growth edge is. The highest range score dimension is the biggest opportunity for growth.
+Reference these when recommending frameworks. The strongest poles show where the user is comfortable. The weakest poles show where the growth edge is. The highest polarisation dimension is the biggest opportunity for growth.
 `
 }
 
@@ -105,12 +105,12 @@ function formatShiftContext(current: RadarScores & { readiness_score?: number },
   })
 
   const readinessShift = current.readiness_score && previous.readiness_score
-    ? `\nReadiness Score: ${previous.readiness_score}/10 → ${current.readiness_score}/10 (${current.readiness_score >= previous.readiness_score ? '+' : ''}${(current.readiness_score - previous.readiness_score).toFixed(1)})`
+    ? `\nAdaptive Range Score: ${previous.readiness_score}/10 → ${current.readiness_score}/10 (${current.readiness_score >= previous.readiness_score ? '+' : ''}${(current.readiness_score - previous.readiness_score).toFixed(1)})`
     : ''
 
   return `
 PREVIOUS RADAR (for shift analysis):
-${poles.map(p => `${p.name}: ${previous[p.key]}`).join(' | ')}${previous.readiness_score ? `\nPrevious Readiness Score: ${previous.readiness_score}/10` : ''}
+${poles.map(p => `${p.name}: ${previous[p.key]}`).join(' | ')}${previous.readiness_score ? `\nPrevious Adaptive Range Score: ${previous.readiness_score}/10` : ''}
 
 SHIFT BETWEEN DIAGNOSTICS:${readinessShift}
 ${shifts.join('\n')}
