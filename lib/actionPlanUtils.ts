@@ -41,8 +41,8 @@ function actionPlanToHTML(text: string): string {
       html += '<br>'
       continue
     }
-    // Convert **bold** segments
-    const formatted = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Convert **bold** segments and strip any remaining orphaned **
+    const formatted = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*\*/g, '')
     // Style the label line differently
     if (/^your practical action/i.test(line)) {
       html += `<p class="action-label">${formatted}</p>`

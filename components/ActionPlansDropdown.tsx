@@ -3,16 +3,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { type ActionPlan, formatPlanDate, downloadActionPlanPDF } from '@/lib/actionPlanUtils'
 
-// Renders a line that may contain inline **bold** segments
+// Renders a line that may contain inline **bold** segments.
+// Also strips any orphaned ** left by markdown extraction edge-cases.
 function renderBoldLine(line: string): React.ReactNode {
   const parts = line.split(/(\*\*[^*]+\*\*)/)
-  if (parts.length === 1) return line
+  if (parts.length === 1) return line.replace(/\*\*/g, '')
   return (
     <>
       {parts.map((part, i) =>
         part.startsWith('**') && part.endsWith('**')
           ? <strong key={i}>{part.slice(2, -2)}</strong>
-          : <span key={i}>{part}</span>
+          : <span key={i}>{part.replace(/\*\*/g, '')}</span>
       )}
     </>
   )
@@ -242,7 +243,10 @@ export default function ActionPlansDropdown() {
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
                     }}>
-                      {plan.practical_action}
+                      {plan.practical_action
+                        .replace(/\*\*/g, '')
+                        .split('\n')
+                        .filter(l => l.trim() && !/^your practical action/i.test(l))[0] ?? ''}
                     </p>
                   </button>
                 )
@@ -354,17 +358,20 @@ export default function ActionPlansDropdown() {
                   borderRadius: '0 10px 10px 0',
                 }}>
                   {selectedPlan.practical_action.split('\n').map((line, i) => {
+                    if (line.trim() === '') return <div key={i} style={{ height: '10px' }} />
                     const isLabel = /^your practical action/i.test(line)
+                    const isDay = /^day\s+\d/i.test(line)
                     return (
                       <p key={i} style={{
                         fontSize: isLabel ? '10px' : '14px',
-                        fontWeight: isLabel ? '700' : '400',
+                        fontWeight: isLabel ? '700' : isDay ? '600' : '400',
                         letterSpacing: isLabel ? '0.14em' : '0',
                         textTransform: isLabel ? 'uppercase' : 'none',
-                        color: '#1a1a1a',
+                        color: isLabel ? '#9CA3AF' : isDay ? '#334a69' : '#1a1a1a',
                         fontFamily: 'var(--font-inter)',
-                        lineHeight: '1.75',
-                        marginBottom: line === '' ? '10px' : '1px',
+                        lineHeight: '1.7',
+                        marginBottom: '2px',
+                        marginTop: isDay ? '14px' : '0',
                       }}>
                         {renderBoldLine(line)}
                       </p>

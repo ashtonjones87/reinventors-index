@@ -90,7 +90,9 @@ function extractActionPlanText(messages: { role: string; content: string }[]): s
     const content = assistantMessages[i].content
     const idx = content.search(/your practical action this week/i)
     if (idx !== -1) {
-      let planText = content.slice(idx)
+      // Go back 2 chars to include any leading ** bold marker (e.g. **Your practical action...)
+      const startIdx = idx >= 2 && content.slice(idx - 2, idx) === '**' ? idx - 2 : idx
+      let planText = content.slice(startIdx)
       // Strip the newsletter line
       planText = planText.replace(/\n*\*?Want to go deeper\?[^\n]*/gi, '').trim()
       return planText
