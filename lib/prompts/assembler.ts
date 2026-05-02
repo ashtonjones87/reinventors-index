@@ -25,6 +25,7 @@ interface SessionSummary {
 interface BuildSystemPromptArgs {
   previousSummary?: SessionSummary | null
   radarScores?: RadarScores | null
+  previousRadarScores?: RadarScores | null
   contextDetected?: string | null
   preDiagnosticContext?: string | null
 }
@@ -85,9 +86,43 @@ Reference these when recommending frameworks. The strongest poles show where the
 `
 }
 
+function formatShiftContext(current: RadarScores & { readiness_score?: number }, previous: RadarScores & { readiness_score?: number }): string {
+  const poles: Array<{ name: string; key: keyof RadarScores }> = [
+    { name: 'Intuitive', key: 'intuitive' },
+    { name: 'Analytical', key: 'analytical' },
+    { name: 'Proactive', key: 'proactive' },
+    { name: 'Reactive', key: 'reactive' },
+    { name: 'Collaborative', key: 'collaborative' },
+    { name: 'Directive', key: 'directive' },
+    { name: 'Cognitive', key: 'cognitive' },
+    { name: 'Purpose', key: 'spiritual_purpose' },
+  ]
+
+  const shifts = poles.map(p => {
+    const diff = (current[p.key] as number) - (previous[p.key] as number)
+    const direction = diff > 0 ? `+${diff.toFixed(1)}` : diff < 0 ? `${diff.toFixed(1)}` : 'no change'
+    return `${p.name}: ${previous[p.key]} → ${current[p.key]} (${direction})`
+  })
+
+  const readinessShift = current.readiness_score && previous.readiness_score
+    ? `\nReadiness Score: ${previous.readiness_score}/10 → ${current.readiness_score}/10 (${current.readiness_score >= previous.readiness_score ? '+' : ''}${(current.readiness_score - previous.readiness_score).toFixed(1)})`
+    : ''
+
+  return `
+PREVIOUS RADAR (for shift analysis):
+${poles.map(p => `${p.name}: ${previous[p.key]}`).join(' | ')}${previous.readiness_score ? `\nPrevious Readiness Score: ${previous.readiness_score}/10` : ''}
+
+SHIFT BETWEEN DIAGNOSTICS:${readinessShift}
+${shifts.join('\n')}
+
+When the user asks about their shift, progress, or what changed - use these exact numbers. You have everything you need to explain the movement on each pole and overall readiness. Do not ask the user to provide their scores.
+`
+}
+
 export function buildSystemPrompt({
   previousSummary,
   radarScores,
+  previousRadarScores,
   contextDetected,
   preDiagnosticContext,
 }: BuildSystemPromptArgs): string {
@@ -127,6 +162,10 @@ Use the radar scores provided to inform your recommendations - do not re-collect
 
   if (radarScores) {
     parts.push(formatRadarContext(radarScores))
+  }
+
+  if (radarScores && previousRadarScores) {
+    parts.push(formatShiftContext(radarScores, previousRadarScores))
   }
 
   return parts.join('\n\n')

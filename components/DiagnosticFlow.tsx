@@ -168,6 +168,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
   const currentStatement = DIAGNOSTIC_STATEMENTS[currentIndex]
   const currentDimension = getDimensionForIndex(currentIndex)
   const showFraming = isFirstInDimension(currentIndex)
+  const showDimensionLabel = !isFirstInDimension(currentIndex)
   const framingText = DIMENSION_FRAMINGS[context][currentDimension]
   const progress = Math.round((currentIndex / 16) * 100)
 
@@ -208,7 +209,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
         <div className="progress-fill" style={{ height: '3px', width: `${progress}%` }} />
       </div>
 
-      {/* Dimension framing */}
+      {/* Dimension framing - first question: show label + description */}
       {showFraming && (
         <div
           className="framing-card"
@@ -239,6 +240,21 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
             {framingText}
           </p>
         </div>
+      )}
+
+      {/* Dimension label only - questions 2-4 in each dimension */}
+      {showDimensionLabel && (
+        <p style={{
+          fontSize: '10px',
+          fontWeight: '700',
+          letterSpacing: '0.12em',
+          color: '#2A7B7B',
+          textTransform: 'uppercase',
+          marginBottom: '16px',
+          opacity: 0.8,
+        }}>
+          {currentDimension.replace('_', ' ')}
+        </p>
       )}
 
       {/* Statement card */}

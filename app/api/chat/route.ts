@@ -40,12 +40,14 @@ export async function POST(req: NextRequest) {
     ])
 
     const currentRadar = diagnostics[0] ?? null
+    const previousRadar = diagnostics[1] ?? null
 
     const systemPrompt = diagnostics.length === 0
       ? buildPreDiagnosticPrompt({ previousSummary: latestSummary })
       : buildSystemPrompt({
           previousSummary: latestSummary,
           radarScores: currentRadar,
+          previousRadarScores: previousRadar,
           contextDetected: currentRadar?.context_detected ?? null,
           preDiagnosticContext: typeof preDiagnosticContext === 'string' ? preDiagnosticContext : null,
         })

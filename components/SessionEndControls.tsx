@@ -65,7 +65,7 @@ export default function SessionEndControls({ messages, onSessionSaved, detectedC
   }
 
   function handleEndSession() {
-    if (window.confirm('End this session and save your progress?')) {
+    if (window.confirm('Save your action plan and end this session?')) {
       saveSession()
     }
   }
@@ -204,7 +204,7 @@ export default function SessionEndControls({ messages, onSessionSaved, detectedC
           transition: 'all 0.15s',
         }}
       >
-        {saving ? 'Saving…' : 'End session'}
+        {saving ? 'Saving…' : 'Save Action Plan'}
       </button>
     </div>
   )

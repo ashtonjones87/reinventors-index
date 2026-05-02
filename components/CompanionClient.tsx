@@ -5,6 +5,7 @@ import { UserButton } from '@clerk/nextjs'
 import DiagnosticFlow from './DiagnosticFlow'
 import ChatWindow from './ChatWindow'
 import RadarChart from './RadarChart'
+import ScoreModal from './ScoreModal'
 
 type Phase = 'preDiagnostic' | 'diagnostic' | 'chat'
 
@@ -43,6 +44,7 @@ export default function CompanionClient({
   const [menuOpen, setMenuOpen] = useState(false)
   const [detectedContext, setDetectedContext] = useState<string | null>(null)
   const [preDiagnosticContext, setPreDiagnosticContext] = useState<string | null>(null)
+  const [showScoreModal, setShowScoreModal] = useState(false)
 
   function closeMenu() { setMenuOpen(false) }
 
@@ -424,6 +426,32 @@ export default function CompanionClient({
             </div>
           )}
 
+          {/* Learn More */}
+          {rangeScores && (
+            <button
+              onClick={() => setShowScoreModal(true)}
+              className="anim-up-delay-4"
+              style={{
+                marginBottom: '20px',
+                padding: '7px 20px',
+                borderRadius: '999px',
+                backgroundColor: 'transparent',
+                color: '#9CA3AF',
+                fontSize: '12px',
+                fontWeight: '500',
+                fontFamily: 'var(--font-inter)',
+                border: '1px solid #D1D5DB',
+                cursor: 'pointer',
+                letterSpacing: '0.02em',
+                transition: 'all 0.15s',
+              }}
+              onMouseOver={e => { e.currentTarget.style.color = '#334a69'; e.currentTarget.style.borderColor = '#334a69' }}
+              onMouseOut={e => { e.currentTarget.style.color = '#9CA3AF'; e.currentTarget.style.borderColor = '#D1D5DB' }}
+            >
+              What does this mean?
+            </button>
+          )}
+
           {/* Action Buttons */}
           <div className="anim-up-delay-4" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
             {isViewingFromChat ? (
@@ -509,6 +537,17 @@ export default function CompanionClient({
 
         </div>
       </div>
+
+      {/* Score Modal */}
+      {showScoreModal && radarScores && rangeScores && (
+        <ScoreModal
+          readinessScore={readinessScore ?? 0}
+          radarScores={radarScores}
+          rangeScores={rangeScores}
+          detectedContext={detectedContext}
+          prevRadarScores={prevRadarScores ?? null}
+          onClose={() => setShowScoreModal(false)}
+        />
       )}
 
       {/* Header */}
