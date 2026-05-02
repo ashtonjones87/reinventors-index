@@ -6,6 +6,7 @@ import DiagnosticFlow from './DiagnosticFlow'
 import ChatWindow from './ChatWindow'
 import RadarChart from './RadarChart'
 import ScoreModal from './ScoreModal'
+import ActionPlansDropdown from './ActionPlansDropdown'
 
 type Phase = 'preDiagnostic' | 'diagnostic' | 'chat'
 
@@ -537,6 +538,7 @@ export default function CompanionClient({
 
         </div>
       </div>
+      )}
 
       {/* Score Modal */}
       {showScoreModal && radarScores && rangeScores && (
@@ -618,6 +620,9 @@ export default function CompanionClient({
               View Radar
             </button>
           )}
+          <div className="phone-hide">
+            <ActionPlansDropdown />
+          </div>
           <button
             className="phone-hide"
             onClick={handleRetakeDiagnostic}
@@ -774,6 +779,20 @@ export default function CompanionClient({
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
+
+            {/* Action Plans */}
+            <div style={{
+              padding: '14px 20px',
+              borderBottom: '1px solid #F0EDE8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}>
+              <span style={{ fontSize: '15px', fontWeight: '600', color: '#334a69', fontFamily: 'var(--font-inter)' }}>
+                Action Plans
+              </span>
+              <ActionPlansDropdown />
+            </div>
 
             {/* Account */}
             <div style={{

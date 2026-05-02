@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { createAnthropicClient } from '@/lib/claude'
 import { SUMMARY_GENERATION_PROMPT } from '@/lib/prompts/summary'
-import { saveSummary } from '@/lib/supabase/queries'
+import { saveSummary, saveActionPlan } from '@/lib/supabase/queries'
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -53,6 +53,21 @@ export async function POST(req: NextRequest) {
       open_questions: summaryData.open_questions,
       shift_observed: summaryData.shift_observed,
     }, transcript)
+
+    // Also persist as an action plan (auto-deletes oldest if user already has 3)
+    try {
+      await saveActionPlan(userId, {
+        context_detected: context_detected ?? summaryData.context_detected ?? null,
+        framework_explored: summaryData.framework_explored,
+        core_tension: summaryData.core_tension,
+        practical_action: summaryData.practical_action,
+        open_questions: summaryData.open_questions,
+        shift_observed: summaryData.shift_observed,
+      })
+    } catch (planError) {
+      // Non-fatal: session summary was already saved successfully
+      console.error('Failed to save action plan:', planError)
+    }
 
     return NextResponse.json({ success: true, summary: summaryData })
 

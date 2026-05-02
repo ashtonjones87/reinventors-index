@@ -151,3 +151,68 @@ export async function saveRadar(
   })
   if (error) throw error
 }
+
+// ============================================
+// ACTION PLAN QUERIES
+// ============================================
+
+export async function getActionPlans(userId: string) {
+  const supabase = getSupabaseServer()
+  const { data, error } = await supabase
+    .from('action_plans')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(3)
+  if (error) throw error
+  return data ?? []
+}
+
+export async function saveActionPlan(
+  userId: string,
+  plan: {
+    context_detected?: string | null
+    framework_explored?: string | null
+    core_tension?: string | null
+    practical_action: string
+    open_questions?: string | null
+    shift_observed?: string | null
+  }
+): Promise<{ deletedOldest: boolean }> {
+  const supabase = getSupabaseServer()
+
+  const { count, error: countError } = await supabase
+    .from('action_plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+  if (countError) throw countError
+
+  let deletedOldest = false
+  if ((count ?? 0) >= 3) {
+    const { data: oldest } = await supabase
+      .from('action_plans')
+      .select('id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .single()
+
+    if (oldest) {
+      await supabase.from('action_plans').delete().eq('id', oldest.id)
+      deletedOldest = true
+    }
+  }
+
+  const { error } = await supabase.from('action_plans').insert({
+    user_id: userId,
+    context_detected: plan.context_detected ?? null,
+    framework_explored: plan.framework_explored ?? null,
+    core_tension: plan.core_tension ?? null,
+    practical_action: plan.practical_action,
+    open_questions: plan.open_questions ?? null,
+    shift_observed: plan.shift_observed ?? null,
+  })
+  if (error) throw error
+
+  return { deletedOldest }
+}
