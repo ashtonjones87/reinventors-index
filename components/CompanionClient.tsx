@@ -247,13 +247,7 @@ export default function CompanionClient({
           }}>
             {isRetaking
               ? "Same 16 statements. Rate each one honestly based on where you are right now, not where you were last time."
-              : <>
-                  Rate each statement 1 to 5 based on how true it feels. Takes about five minutes.
-                  <br /><br />
-                  <span style={{ fontSize: '14px', color: '#9CA3AF' }}>
-                    The conversation that follows goes deeper, set aside 15–20 minutes to get the most out of it.
-                  </span>
-                </>
+              : "Rate each statement 1 to 5 based on how true it feels. Takes about five minutes. The conversation that follows goes deeper, set aside 15–20 minutes to get the most out of it."
             }
           </p>
 
