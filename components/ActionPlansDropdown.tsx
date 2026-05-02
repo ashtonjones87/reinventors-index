@@ -357,26 +357,46 @@ export default function ActionPlansDropdown() {
                   padding: '16px 20px',
                   borderRadius: '0 10px 10px 0',
                 }}>
-                  {selectedPlan.practical_action.split('\n').map((line, i) => {
-                    if (line.trim() === '') return <div key={i} style={{ height: '10px' }} />
-                    const isLabel = /^your practical action/i.test(line)
-                    const isDay = /^day\s+\d/i.test(line)
-                    return (
-                      <p key={i} style={{
-                        fontSize: isLabel ? '10px' : '14px',
-                        fontWeight: isLabel ? '700' : isDay ? '600' : '400',
-                        letterSpacing: isLabel ? '0.14em' : '0',
-                        textTransform: isLabel ? 'uppercase' : 'none',
-                        color: isLabel ? '#9CA3AF' : isDay ? '#334a69' : '#1a1a1a',
-                        fontFamily: 'var(--font-inter)',
-                        lineHeight: '1.7',
-                        marginBottom: '2px',
-                        marginTop: isDay ? '14px' : '0',
-                      }}>
-                        {renderBoldLine(line)}
-                      </p>
-                    )
-                  })}
+                  {(() => {
+                    const elements: React.ReactNode[] = []
+                    selectedPlan.practical_action.split('\n').forEach((line, i) => {
+                      if (line.trim() === '') {
+                        elements.push(<div key={i} style={{ height: '10px' }} />)
+                        return
+                      }
+                      const cleanLine = line.replace(/\*\*/g, '')
+                      const labelMatch = cleanLine.match(/^your practical action this week\s*:?\s*/i)
+                      const isDay = /^day\s+\d/i.test(cleanLine)
+                      if (labelMatch) {
+                        const remaining = cleanLine.slice(labelMatch[0].length).trim()
+                        elements.push(
+                          <p key={`lbl-${i}`} style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#9CA3AF', fontFamily: 'var(--font-inter)', marginBottom: '8px', lineHeight: '1.5' }}>
+                            Your Practical Action This Week
+                          </p>
+                        )
+                        if (remaining) {
+                          elements.push(
+                            <p key={`body-${i}`} style={{ fontSize: '14px', color: '#1a1a1a', fontFamily: 'var(--font-inter)', lineHeight: '1.7', marginBottom: '2px' }}>
+                              {renderBoldLine(remaining)}
+                            </p>
+                          )
+                        }
+                      } else if (isDay) {
+                        elements.push(
+                          <p key={i} style={{ fontSize: '14px', fontWeight: '700', color: '#334a69', fontFamily: 'var(--font-inter)', lineHeight: '1.7', marginTop: '16px', marginBottom: '4px' }}>
+                            {renderBoldLine(cleanLine)}
+                          </p>
+                        )
+                      } else {
+                        elements.push(
+                          <p key={i} style={{ fontSize: '14px', color: '#1a1a1a', fontFamily: 'var(--font-inter)', lineHeight: '1.7', marginBottom: '2px' }}>
+                            {renderBoldLine(line)}
+                          </p>
+                        )
+                      }
+                    })
+                    return elements
+                  })()}
                 </div>
               </div>
 

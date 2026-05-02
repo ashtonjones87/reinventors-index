@@ -41,14 +41,18 @@ function actionPlanToHTML(text: string): string {
       html += '<br>'
       continue
     }
+    // Strip ** for clean-text matching
+    const cleanLine = line.replace(/\*\*/g, '')
     // Convert **bold** segments and strip any remaining orphaned **
     const formatted = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*\*/g, '')
-    // Style the label line differently
-    if (/^your practical action/i.test(line)) {
-      html += `<p class="action-label">${formatted}</p>`
-    } else if (/^day\s+1/i.test(line.replace(/<[^>]+>/g, ''))) {
-      html += `<p class="day-line">${formatted}</p>`
-    } else if (/^day\s+8/i.test(line.replace(/<[^>]+>/g, ''))) {
+
+    const labelMatch = cleanLine.match(/^your practical action this week\s*:?\s*/i)
+    if (labelMatch) {
+      // Render label as small caps header, then body text on the next line
+      const remaining = escapeHTML(cleanLine.slice(labelMatch[0].length).trim())
+      html += `<p class="action-label">Your Practical Action This Week</p>`
+      if (remaining) html += `<p class="body-line">${remaining}</p>`
+    } else if (/^day\s+\d/i.test(cleanLine)) {
       html += `<p class="day-line">${formatted}</p>`
     } else {
       html += `<p class="body-line">${formatted}</p>`
