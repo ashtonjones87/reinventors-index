@@ -17,6 +17,10 @@ const libreBaskerville = Libre_Baskerville({
 export const metadata: Metadata = {
   title: "The Reinventor's Mindset™ Index",
   description: 'AI coaching companion by Ashton Jones',
+  icons: {
+    icon: '/icon.jpg',
+    shortcut: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({

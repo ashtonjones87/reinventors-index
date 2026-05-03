@@ -19,7 +19,7 @@ function renderBoldLine(line: string): React.ReactNode {
   )
 }
 
-export default function ActionPlansDropdown() {
+export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' } = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const [plans, setPlans] = useState<ActionPlan[] | null>(null) // null = not yet fetched
   const [loading, setLoading] = useState(false)
@@ -90,43 +90,84 @@ export default function ActionPlansDropdown() {
   return (
     <>
       {/* Trigger button */}
-      <button
-        ref={buttonRef}
-        onClick={handleToggle}
-        style={{
-          fontSize: '12px',
-          fontWeight: '600',
-          color: '#334a69',
-          border: '1.5px solid #334a69',
-          background: 'transparent',
-          padding: '5px 14px',
-          borderRadius: '999px',
-          cursor: 'pointer',
-          fontFamily: 'var(--font-inter)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          transition: 'all 0.15s',
-          letterSpacing: '0.01em',
-        }}
-        onMouseOver={e => { e.currentTarget.style.backgroundColor = 'rgba(51,74,105,0.06)' }}
-        onMouseOut={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
-      >
-        Action Plans
-        {planCount > 0 && (
-          <span style={{
-            backgroundColor: '#334a69',
-            color: '#fff',
+      {variant === 'menu-row' ? (
+        <button
+          ref={buttonRef}
+          onClick={handleToggle}
+          style={{
+            width: '100%',
+            padding: '16px 20px',
+            textAlign: 'left',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: '15px',
+            fontWeight: '600',
+            color: '#334a69',
+            fontFamily: 'var(--font-inter)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          Action Plans
+          {planCount > 0 ? (
+            <span style={{
+              backgroundColor: '#334a69',
+              color: '#fff',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: '700',
+              padding: '2px 8px',
+              lineHeight: '1.5',
+            }}>
+              {planCount}
+            </span>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#334a69" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          )}
+        </button>
+      ) : (
+        <button
+          ref={buttonRef}
+          onClick={handleToggle}
+          style={{
+            fontSize: '12px',
+            fontWeight: '600',
+            color: '#334a69',
+            border: '1.5px solid #334a69',
+            background: 'transparent',
+            padding: '5px 14px',
             borderRadius: '999px',
-            fontSize: '10px',
-            fontWeight: '700',
-            padding: '1px 6px',
-            lineHeight: '1.5',
-          }}>
-            {planCount}
-          </span>
-        )}
-      </button>
+            cursor: 'pointer',
+            fontFamily: 'var(--font-inter)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            transition: 'all 0.15s',
+            letterSpacing: '0.01em',
+          }}
+          onMouseOver={e => { e.currentTarget.style.backgroundColor = 'rgba(51,74,105,0.06)' }}
+          onMouseOut={e => { e.currentTarget.style.backgroundColor = 'transparent' }}
+        >
+          Action Plans
+          {planCount > 0 && (
+            <span style={{
+              backgroundColor: '#334a69',
+              color: '#fff',
+              borderRadius: '999px',
+              fontSize: '10px',
+              fontWeight: '700',
+              padding: '1px 6px',
+              lineHeight: '1.5',
+            }}>
+              {planCount}
+            </span>
+          )}
+        </button>
+      )}
 
       {/* Dropdown panel — fixed positioned so it works in any container */}
       {isOpen && (

@@ -794,17 +794,8 @@ export default function CompanionClient({
             </button>
 
             {/* Action Plans */}
-            <div style={{
-              padding: '14px 20px',
-              borderBottom: '1px solid #F0EDE8',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}>
-              <span style={{ fontSize: '15px', fontWeight: '600', color: '#334a69', fontFamily: 'var(--font-inter)' }}>
-                Action Plans
-              </span>
-              <ActionPlansDropdown />
+            <div style={{ borderBottom: '1px solid #F0EDE8' }}>
+              <ActionPlansDropdown variant="menu-row" />
             </div>
 
             {/* Account */}
