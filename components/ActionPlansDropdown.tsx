@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { type ActionPlan, formatPlanDate, downloadActionPlanPDF } from '@/lib/actionPlanUtils'
 
 // Renders a line that may contain inline **bold** segments.
@@ -25,9 +26,12 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
   const [loading, setLoading] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<ActionPlan | null>(null)
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
+  const [mounted, setMounted] = useState(false)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => { setMounted(true) }, [])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -169,8 +173,8 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
         </button>
       )}
 
-      {/* Dropdown panel — fixed positioned so it works in any container */}
-      {isOpen && (
+      {/* Dropdown panel — portalled to body so it escapes any overflow:hidden parent */}
+      {mounted && isOpen && createPortal(
         <div
           ref={dropdownRef}
           style={{
@@ -294,11 +298,12 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
               })}
             </div>
           )}
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* Plan detail modal */}
-      {selectedPlan && (
+      {/* Plan detail modal — portalled to body */}
+      {mounted && selectedPlan && createPortal(
         <div
           onClick={e => { if (e.target === e.currentTarget) setSelectedPlan(null) }}
           style={{
@@ -523,7 +528,8 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

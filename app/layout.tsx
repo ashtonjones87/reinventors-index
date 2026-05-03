@@ -19,7 +19,6 @@ export const metadata: Metadata = {
   description: 'AI coaching companion by Ashton Jones',
   icons: {
     icon: '/icon.jpg',
-    shortcut: '/favicon.ico',
   },
 }
 
