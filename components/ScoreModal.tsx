@@ -111,8 +111,8 @@ function dimensionExplanation(dim: DimDef): string {
 
   const explanation = explanations[dim.label]?.[lean] ?? ''
   const rangeNote = Number(gap) <= 0.5
-    ? `Your scores on both poles are very close (${dim.poleA}: ${dim.scoreA.toFixed(1)}, ${dim.poleB}: ${dim.scoreB.toFixed(1)}) — both poles are equally developed.`
-    : `Polarisation: ${gap} — your underdeveloped pole is ${other} (${other === dim.poleA ? dim.scoreA.toFixed(1) : dim.scoreB.toFixed(1)}). This is where your growth work lives.`
+    ? `Your scores on both poles are very close (${dim.poleA}: ${dim.scoreA.toFixed(1)}, ${dim.poleB}: ${dim.scoreB.toFixed(1)}) - both poles are equally developed.`
+    : `Polarisation: ${gap} - your underdeveloped pole is ${other} (${other === dim.poleA ? dim.scoreA.toFixed(1) : dim.scoreB.toFixed(1)}). This is where your growth work lives.`
 
   return `${explanation} ${rangeNote}`
 }
@@ -223,7 +223,7 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
         <div style={{ width: '32px', height: '2px', background: 'linear-gradient(90deg, #334a69, #2A7B7B)', borderRadius: '999px', marginBottom: '20px', opacity: 0.5 }} />
 
         {/* Readiness Score */}
-        <H>Adaptive Range Score — {readinessScore}/10 — {readinessLabel(readinessScore)}</H>
+        <H>Adaptive Range Score - {readinessScore}/10 - {readinessLabel(readinessScore)}</H>
         <Body>{readinessExplanation(readinessScore)}</Body>
 
         {/* Journey */}
@@ -242,7 +242,7 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
           return (
             <div key={dim.label} style={{ marginBottom: '14px' }}>
               <p style={{ fontWeight: '700', color: '#334a69', fontSize: '13px', marginBottom: '3px' }}>
-                {dim.label} — {polarisationLabel}
+                {dim.label} - {polarisationLabel}
               </p>
               <Body>{dimensionExplanation(dim)}</Body>
             </div>
@@ -254,7 +254,7 @@ export default function ScoreModal({ readinessScore, radarScores, rangeScores, d
           <>
             <H>Your Biggest Growth Edge</H>
             <Body>
-              <strong style={{ color: '#334a69' }}>{growthEdge.label}</strong> has your highest polarisation ({growthEdge.range.toFixed(1)}) — that’s where one pole has crowded out the other. This is where the most leverage sits — the work you do here will ripple across the others.
+              <strong style={{ color: '#334a69' }}>{growthEdge.label}</strong> has your highest polarisation ({growthEdge.range.toFixed(1)}) - that's where one pole has crowded out the other. This is where the most leverage sits - the work you do here will ripple across the others.
             </Body>
           </>
         )}

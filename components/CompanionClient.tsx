@@ -434,8 +434,8 @@ export default function CompanionClient({
                     </p>
                     <p style={{ fontSize: '12px', fontWeight: isBiggest ? '600' : '400', color: isBiggest ? '#C17D10' : '#B5ADA3' }}>
                       {dim.range === 0
-                        ? 'Polarisation: 0.0 — both poles equally developed'
-                        : `Polarisation: ${dim.range.toFixed(1)} — your underdeveloped pole is ${underdevelopedPole}`}
+                        ? 'Polarisation: 0.0 - both poles equally developed'
+                        : `Polarisation: ${dim.range.toFixed(1)} - your underdeveloped pole is ${underdevelopedPole}`}
                     </p>
                   </div>
                 )
