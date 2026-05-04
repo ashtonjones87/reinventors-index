@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "The Reinventor's Mindset™ Index",
   description: 'AI coaching companion by Ashton Jones',
   icons: {
-    icon: '/icon.jpg',
+    icon: '/icon.png',
   },
 }
 
