@@ -275,7 +275,7 @@ export default function PrivacyPage() {
             marginBottom: '10px',
             fontFamily: 'var(--font-inter)',
           }}>
-            The Reinventor&apos;s Mindset™ · ashtonjones.ai
+            The Reinventor&apos;s Mindset™ · reinventor.ai
           </p>
           <h1 style={{
             fontFamily: 'var(--font-libre)',
