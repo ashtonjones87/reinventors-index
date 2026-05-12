@@ -173,7 +173,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
         </button>
       )}
 
-      {/* Dropdown panel — portalled to body so it escapes any overflow:hidden parent */}
+      {/* Dropdown panel - portalled to body so it escapes any overflow:hidden parent */}
       {mounted && isOpen && createPortal(
         <div
           ref={dropdownRef}
@@ -302,7 +302,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
         document.body
       )}
 
-      {/* Plan detail modal — portalled to body */}
+      {/* Plan detail modal - portalled to body */}
       {mounted && selectedPlan && createPortal(
         <div
           onClick={e => { if (e.target === e.currentTarget) setSelectedPlan(null) }}

@@ -1,12 +1,15 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { UserButton } from '@clerk/nextjs'
 import DiagnosticFlow from './DiagnosticFlow'
 import ChatWindow from './ChatWindow'
 import RadarChart from './RadarChart'
 import ScoreModal from './ScoreModal'
 import ActionPlansDropdown from './ActionPlansDropdown'
+import FounderDependencyMap from './FounderDependencyMap'
+import OwnerScoreModal from './OwnerScoreModal'
+import { computeOwnerScores } from '@/lib/ownerIndex'
 
 type Phase = 'preDiagnostic' | 'diagnostic' | 'chat'
 
@@ -16,6 +19,7 @@ interface CompanionClientProps {
   latestSummary: any
   currentRadar: any
   previousRadar: any
+  isOwnerIndex?: boolean
 }
 
 export default function CompanionClient({
@@ -24,6 +28,7 @@ export default function CompanionClient({
   latestSummary,
   currentRadar,
   previousRadar,
+  isOwnerIndex = false,
 }: CompanionClientProps) {
   const [phase, setPhase] = useState<Phase>(hasCompletedDiagnostic ? 'chat' : 'preDiagnostic')
   const [isRetaking, setIsRetaking] = useState(false)
@@ -46,6 +51,10 @@ export default function CompanionClient({
   const [detectedContext, setDetectedContext] = useState<string | null>(null)
   const [preDiagnosticContext, setPreDiagnosticContext] = useState<string | null>(null)
   const [showScoreModal, setShowScoreModal] = useState(false)
+
+  // Owner's Index computed scores
+  const ownerScores = useMemo(() => (isOwnerIndex && radarScores) ? computeOwnerScores(radarScores) : null, [isOwnerIndex, radarScores])
+  const prevOwnerScores = useMemo(() => (isOwnerIndex && prevRadarScores) ? computeOwnerScores(prevRadarScores) : null, [isOwnerIndex, prevRadarScores])
 
   function closeMenu() { setMenuOpen(false) }
 
@@ -116,17 +125,19 @@ export default function CompanionClient({
               textTransform: 'uppercase',
               marginBottom: '2px',
             }}>
-              The Reinventor&apos;s Mindset™
+              {isOwnerIndex ? "The Owner’s Index" : "The Reinventor’s Mindset™"}
             </p>
-            <p style={{
-              fontFamily: 'var(--font-libre)',
-              fontSize: '15px',
-              fontWeight: '700',
-              color: '#334a69',
-              lineHeight: 1,
-            }}>
-              Index
-            </p>
+            {!isOwnerIndex && (
+              <p style={{
+                fontFamily: 'var(--font-libre)',
+                fontSize: '15px',
+                fontWeight: '700',
+                color: '#334a69',
+                lineHeight: 1,
+              }}>
+                Index
+              </p>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button
@@ -265,7 +276,7 @@ export default function CompanionClient({
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', margin: 0, padding: 0, backgroundColor: '#F5F3EE', position: 'relative' }}>
 
-      {/* ── RADAR OVERLAY — rendered on top, chat stays mounted beneath ── */}
+      {/* RADAR OVERLAY - rendered on top, chat stays mounted beneath */}
       {showRadar && radarScores && (
         <div style={{
           position: 'absolute',
@@ -296,7 +307,7 @@ export default function CompanionClient({
             marginBottom: '10px',
             textAlign: 'center',
           }}>
-            Your Mindset Map
+            {isOwnerIndex ? "The Owner's Index" : 'Your Mindset Map'}
           </p>
 
           {/* Title */}
@@ -310,8 +321,22 @@ export default function CompanionClient({
             letterSpacing: '-0.4px',
             lineHeight: '1.2',
           }}>
-            {isViewingFromChat ? 'Your current radar' : "Here\u2019s your map."}
+            {isOwnerIndex
+              ? (isViewingFromChat ? 'Your current map' : "Here's your map.")
+              : (isViewingFromChat ? 'Your current radar' : "Here\u2019s your map.")}
           </h1>
+
+          {/* Owner's Index path - Founder Dependency Map */}
+          {isOwnerIndex && ownerScores ? (
+            <div className="anim-up-delay-1" style={{ width: '100%' }}>
+              <FounderDependencyMap
+                ownerScores={ownerScores}
+                prevOwnerScores={prevOwnerScores}
+                onWhatDoesThisMean={() => setShowScoreModal(true)}
+              />
+            </div>
+          ) : (
+          <>
 
           {/* Readiness Score Card */}
           {readinessScore !== null && (
@@ -469,6 +494,9 @@ export default function CompanionClient({
             </button>
           )}
 
+          </> // end of Mindset path
+          )}
+
           {/* Action Buttons */}
           <div className="anim-up-delay-4" style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
             {isViewingFromChat ? (
@@ -556,14 +584,23 @@ export default function CompanionClient({
       </div>
       )}
 
-      {/* Score Modal */}
-      {showScoreModal && radarScores && rangeScores && (
+      {/* Score Modal - Mindset path */}
+      {showScoreModal && !isOwnerIndex && radarScores && rangeScores && (
         <ScoreModal
           readinessScore={readinessScore ?? 0}
           radarScores={radarScores}
           rangeScores={rangeScores}
           detectedContext={detectedContext}
           prevRadarScores={prevRadarScores ?? null}
+          onClose={() => setShowScoreModal(false)}
+        />
+      )}
+
+      {/* Owner Score Modal - Owner's Index path */}
+      {showScoreModal && isOwnerIndex && ownerScores && (
+        <OwnerScoreModal
+          ownerScores={ownerScores}
+          prevOwnerScores={prevOwnerScores}
           onClose={() => setShowScoreModal(false)}
         />
       )}
@@ -592,17 +629,19 @@ export default function CompanionClient({
             textTransform: 'uppercase',
             marginBottom: '2px',
           }}>
-            The Reinventor&apos;s Mindset™
+            {isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™"}
           </p>
-          <p style={{
-            fontFamily: 'var(--font-libre)',
-            fontSize: '15px',
-            fontWeight: '700',
-            color: '#334a69',
-            lineHeight: 1,
-          }}>
-            Index
-          </p>
+          {!isOwnerIndex && (
+            <p style={{
+              fontFamily: 'var(--font-libre)',
+              fontSize: '15px',
+              fontWeight: '700',
+              color: '#334a69',
+              lineHeight: 1,
+            }}>
+              Index
+            </p>
+          )}
         </div>
 
         {/* Right controls - desktop */}

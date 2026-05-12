@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
@@ -12,6 +13,9 @@ export default async function CompanionPage() {
   if (!userId) {
     redirect('/sign-in')
   }
+
+  const headersList = await headers()
+  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
 
   let latestSummary = null
   let diagnostics: any[] = []
@@ -103,6 +107,7 @@ export default async function CompanionPage() {
         latestSummary={latestSummary}
         currentRadar={currentRadar}
         previousRadar={previousRadar}
+        isOwnerIndex={isOwnerIndex}
       />
     </main>
   )

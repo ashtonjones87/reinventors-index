@@ -92,7 +92,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           savedAnswers: answers,
         }))
       } catch {
-        // sessionStorage unavailable (private browsing quota exceeded) — ignore
+        // sessionStorage unavailable (private browsing quota exceeded) - ignore
       }
     }
   }, [currentIndex, answers])

@@ -5,20 +5,12 @@ interface MessageBubbleProps {
   message: Message
 }
 
-// Convert em dashes and en dashes to plain hyphens
-function normaliseText(text: string): string {
-  return text
-    .replace(/-/g, ' - ')  // em dash -
-    .replace(/–/g, ' - ')  // en dash –
-    .replace(/ - /g, ' - ')     // normalise spacing around hyphens
-}
-
 export default function MessageBubble({ message }: MessageBubbleProps) {
   const isUser = message.role === 'user'
 
   if (!isUser && !message.content) return null
 
-  const content = isUser ? message.content : normaliseText(message.content)
+  const content = message.content
 
   return (
     <div style={{

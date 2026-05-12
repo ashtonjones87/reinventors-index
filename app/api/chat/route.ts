@@ -34,6 +34,8 @@ export async function POST(req: NextRequest) {
       return new Response('Malformed messages', { status: 400 })
     }
 
+    const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
+
     const [latestSummary, diagnostics] = await Promise.all([
       getLatestSummary(userId),
       getLastTwoDiagnostics(userId),
@@ -43,13 +45,14 @@ export async function POST(req: NextRequest) {
     const previousRadar = diagnostics[1] ?? null
 
     const systemPrompt = diagnostics.length === 0
-      ? buildPreDiagnosticPrompt({ previousSummary: latestSummary })
+      ? buildPreDiagnosticPrompt({ previousSummary: latestSummary, isOwnerIndex })
       : buildSystemPrompt({
           previousSummary: latestSummary,
           radarScores: currentRadar,
           previousRadarScores: previousRadar,
           contextDetected: currentRadar?.context_detected ?? null,
           preDiagnosticContext: typeof preDiagnosticContext === 'string' ? preDiagnosticContext : null,
+          isOwnerIndex,
         })
 
     const anthropic = createAnthropicClient()

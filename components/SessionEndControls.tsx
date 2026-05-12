@@ -87,7 +87,7 @@ export default function SessionEndControls({ messages, onSessionSaved, detectedC
         }
       })
       .catch(() => {
-        // Fetch failed — proceed with normal confirm
+        // Fetch failed - proceed with normal confirm
         if (window.confirm('Save your action plan and end this session?')) {
           saveSession()
         }

@@ -1,7 +1,7 @@
-﻿import { auth } from '@clerk/nextjs/server'
+﻿import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { scoreResponses } from '@/lib/diagnostic'
-import { saveRadar } from '@/lib/supabase/queries'
+import { saveRadar, upsertUser } from '@/lib/supabase/queries'
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -11,6 +11,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Ensure user exists in Supabase (handles local dev where webhooks can't reach localhost,
+    // and acts as a safety net in production for any webhook delivery gaps)
+    const clerkUser = await currentUser()
+    if (clerkUser) {
+      const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
+      const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || email
+      await upsertUser(userId, email, name)
+    }
+
     const body = await req.json()
     const { answers, journey } = body
 

@@ -82,7 +82,7 @@ export const DIAGNOSTIC_STATEMENTS = [
   // Dimension 4 - Awareness
   {
     id: 13,
-    statement: 'I make sense of uncertainty through frameworks, patterns, and mental models.',
+    statement: 'I make sense of uncertainty through frameworks, patterns and mental models.',
     pole: 'cognitive',
     dimension: 'awareness',
   },
@@ -121,7 +121,7 @@ export const DIMENSION_FRAMINGS = {
     leadership:
       "Building something means deciding how much you pull people in versus how much you just move. Let's understand your natural leadership instinct when the stakes are high.",
     awareness:
-      "What sustains you through uncertainty isn't just strategy — it's knowing why you started. Let's understand what's driving you beneath the business case.",
+      "What sustains you through uncertainty isn't just strategy - it's knowing why you started. Let's understand what's driving you beneath the business case.",
   },
   leader: {
     decision_making:
@@ -131,7 +131,7 @@ export const DIMENSION_FRAMINGS = {
     leadership:
       "At the executive level, how you make decisions shapes the decision-making culture beneath you. Let's understand whether you lead through consensus or conviction.",
     awareness:
-      "The leaders who last aren't just competent — they're connected to something that outlasts any role or title. Let's understand what that is for you.",
+      "The leaders who last aren't just competent - they're connected to something that outlasts any role or title. Let's understand what that is for you.",
   },
   innovator: {
     decision_making:
@@ -141,7 +141,7 @@ export const DIMENSION_FRAMINGS = {
     leadership:
       "Innovation inside a system requires knowing when to build consensus and when to move without it. Let's understand your natural instinct.",
     awareness:
-      "What keeps an internal change agent going isn't just the initiative — it's knowing what it's really about. Let's understand what's driving you beneath the project.",
+      "What keeps an internal change agent going isn't just the initiative - it's knowing what it's really about. Let's understand what's driving you beneath the project.",
   },
 }
 

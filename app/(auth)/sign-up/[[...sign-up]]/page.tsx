@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { SignUp, useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
-const BrandHeader = () => (
+const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
   <div style={{ textAlign: 'center', marginBottom: '32px' }}>
     <p style={{
       fontSize: '11px',
@@ -14,7 +14,7 @@ const BrandHeader = () => (
       textTransform: 'uppercase',
       marginBottom: '10px',
     }}>
-      The Reinventor&apos;s Mindset™
+      {isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™"}
     </p>
     <h1 style={{
       fontFamily: 'var(--font-libre)',
@@ -25,8 +25,21 @@ const BrandHeader = () => (
       lineHeight: 1,
       marginBottom: '12px',
     }}>
-      Index
+      {isOwnerIndex ? 'Owner’s Index' : 'Index'}
     </h1>
+    {isOwnerIndex && (
+      <p style={{
+        fontSize: '14px',
+        color: '#6B7280',
+        fontFamily: 'var(--font-inter)',
+        lineHeight: '1.6',
+        marginBottom: '12px',
+        maxWidth: '320px',
+        margin: '0 auto 12px',
+      }}>
+        How dependent is your business on you?
+      </p>
+    )}
     <div style={{
       width: '32px',
       height: '2px',
@@ -42,11 +55,13 @@ export default function SignUpPage() {
   const [mounted, setMounted] = useState(false)
   const [consented, setConsented] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [isOwnerIndex, setIsOwnerIndex] = useState(false)
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
     setMounted(true)
+    setIsOwnerIndex(window.location.hostname.includes('ownerindex'))
     // Restore showForm from sessionStorage so OTP remounts don't flash the consent box
     if (sessionStorage.getItem('signup_in_progress') === 'true') {
       setShowForm(true)
@@ -74,7 +89,7 @@ export default function SignUpPage() {
         padding: '24px',
       }}>
         <div style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <BrandHeader />
+          <BrandHeader isOwnerIndex={isOwnerIndex} />
         </div>
       </main>
     )
@@ -96,7 +111,7 @@ export default function SignUpPage() {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <BrandHeader />
+        <BrandHeader isOwnerIndex={isOwnerIndex} />
 
         {/* Consent checkbox */}
         <label style={{

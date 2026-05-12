@@ -1,5 +1,6 @@
 ﻿import { BASE_PROMPT } from './base'
 import { UNIFIED_OVERLAY } from './overlays/unified'
+import { OWNER_OPERATOR_OVERLAY } from './overlays/owner-operator'
 
 interface RadarScores {
   intuitive: number
@@ -10,6 +11,7 @@ interface RadarScores {
   directive: number
   cognitive: number
   spiritual_purpose: number
+  readiness_score?: number
 }
 
 interface SessionSummary {
@@ -28,6 +30,7 @@ interface BuildSystemPromptArgs {
   previousRadarScores?: RadarScores | null
   contextDetected?: string | null
   preDiagnosticContext?: string | null
+  isOwnerIndex?: boolean
 }
 
 function formatPreviousSummary(summary: SessionSummary): string {
@@ -46,7 +49,6 @@ Shift observed: ${summary.shift_observed}
 }
 
 function formatRadarContext(scores: RadarScores & {
-  readiness_score?: number
   range_decision_making?: number
   range_behaviour?: number
   range_leadership?: number
@@ -86,7 +88,78 @@ Reference these when recommending frameworks. The strongest poles show where the
 `
 }
 
-function formatShiftContext(current: RadarScores & { readiness_score?: number }, previous: RadarScores & { readiness_score?: number }): string {
+function computeOwnerDims(scores: RadarScores) {
+  const process     = Math.min(10, Math.max(0, 10 - ((scores.cognitive as number) + (scores.intuitive as number))))
+  const information = Math.min(10, Math.max(0, 10 - ((scores.reactive as number) + (scores.collaborative as number))))
+  const decision    = Math.min(10, Math.max(0, 10 - ((scores.directive as number) + (scores.proactive as number))))
+  const energy      = Math.min(10, Math.max(0, 10 - ((scores.spiritual_purpose as number) + (scores.analytical as number))))
+  const taste       = scores.readiness_score ?? 5
+  const fds         = parseFloat(((process + information + decision + energy) / 4).toFixed(1))
+  return { process, information, decision, energy, taste, fds }
+}
+
+function depLabel(s: number) { return s >= 7 ? 'High Dependency' : s >= 4 ? 'Moderate Dependency' : 'Low Dependency' }
+function wsLabel(s: number)  { return s >= 7 ? 'Strong Watermark' : s >= 4 ? 'Defined Watermark' : 'Emerging Watermark' }
+function fdsLabel(s: number) { return s >= 7 ? 'High dependency - heavily founder-reliant' : s >= 4 ? 'Moderate dependency' : 'Highly extractable - business can run without you' }
+
+function formatOwnerIndexContext(scores: RadarScores): string {
+  const { process, information, decision, energy, taste, fds } = computeOwnerDims(scores)
+
+  const dims = [
+    { label: 'Process Dependency', score: process },
+    { label: 'Information Dependency', score: information },
+    { label: 'Decision Dependency', score: decision },
+    { label: 'Energy Dependency', score: energy },
+  ]
+  const biggest = dims.reduce((a, b) => a.score > b.score ? a : b)
+
+  return `
+OWNER'S INDEX SCORES:
+Founder Dependency Score (FDS): ${fds}/10 - ${fdsLabel(fds)}
+Watermark Strength: ${taste.toFixed(1)}/10 - ${wsLabel(taste)}
+
+Dimension breakdown:
+- Process Dependency: ${process.toFixed(1)}/10 - ${depLabel(process)} (O1 Free Yourself, O2 Make It Repeatable)
+- Information Dependency: ${information.toFixed(1)}/10 - ${depLabel(information)} (O3 Write Your Recipe, O4 Make It Visible)
+- Decision Dependency: ${decision.toFixed(1)}/10 - ${depLabel(decision)} (O5 Raise The Average, O6 Don't Apologise)
+- Energy Dependency: ${energy.toFixed(1)}/10 - ${depLabel(energy)} (O7 Subtract To Scale, O8 No Loose Ends)
+- Taste / Watermark Strength: ${taste.toFixed(1)}/10 - ${wsLabel(taste)} (O9 Your Watermark)
+
+Biggest extraction priority: ${biggest.label} at ${biggest.score.toFixed(1)}/10.
+
+Use Owner's Index vocabulary when talking to the user - refer to FDS, dimensions (Process, Information, Decision, Energy, Taste) and Owner's Playbook pillars. Do NOT use raw radar pole names (Intuitive, Analytical, Collaborative, Directive, etc.) in your conversation - those are internal scoring inputs only.
+`
+}
+
+function formatOwnerIndexShift(
+  current: RadarScores,
+  previous: RadarScores
+): string {
+  const c = computeOwnerDims(current)
+  const p = computeOwnerDims(previous)
+
+  function diff(a: number, b: number) {
+    const d = a - b
+    return `${previous ? b.toFixed(1) : '?'} → ${a.toFixed(1)} (${d > 0 ? '+' : ''}${d.toFixed(1)})`
+  }
+
+  return `
+PREVIOUS OWNER'S INDEX (for shift analysis):
+Previous FDS: ${p.fds}/10 | Current FDS: ${c.fds}/10 (${c.fds >= p.fds ? '+' : ''}${(c.fds - p.fds).toFixed(1)})
+Previous Watermark: ${p.taste.toFixed(1)}/10 | Current Watermark: ${c.taste.toFixed(1)}/10
+
+Dimension shifts:
+- Process Dependency: ${diff(c.process, p.process)}
+- Information Dependency: ${diff(c.information, p.information)}
+- Decision Dependency: ${diff(c.decision, p.decision)}
+- Energy Dependency: ${diff(c.energy, p.energy)}
+- Watermark Strength: ${diff(c.taste, p.taste)}
+
+When the user asks what changed, use these numbers. Do not ask the user to provide their scores.
+`
+}
+
+function formatShiftContext(current: RadarScores, previous: RadarScores): string {
   const poles: Array<{ name: string; key: keyof RadarScores }> = [
     { name: 'Intuitive', key: 'intuitive' },
     { name: 'Analytical', key: 'analytical' },
@@ -125,6 +198,7 @@ export function buildSystemPrompt({
   previousRadarScores,
   contextDetected,
   preDiagnosticContext,
+  isOwnerIndex,
 }: BuildSystemPromptArgs): string {
   const parts: string[] = []
 
@@ -158,14 +232,17 @@ Use the radar scores provided to inform your recommendations - do not re-collect
   }
 
   parts.push(BASE_PROMPT)
-  parts.push(UNIFIED_OVERLAY)
+  parts.push(isOwnerIndex ? OWNER_OPERATOR_OVERLAY : UNIFIED_OVERLAY)
 
   if (radarScores) {
-    parts.push(formatRadarContext(radarScores))
+    parts.push(isOwnerIndex ? formatOwnerIndexContext(radarScores) : formatRadarContext(radarScores))
   }
 
   if (radarScores && previousRadarScores) {
-    parts.push(formatShiftContext(radarScores, previousRadarScores))
+    parts.push(isOwnerIndex
+      ? formatOwnerIndexShift(radarScores, previousRadarScores)
+      : formatShiftContext(radarScores, previousRadarScores)
+    )
   }
 
   return parts.join('\n\n')
@@ -173,7 +250,8 @@ Use the radar scores provided to inform your recommendations - do not re-collect
 
 export function buildPreDiagnosticPrompt({
   previousSummary,
-}: { previousSummary?: SessionSummary | null }): string {
+  isOwnerIndex,
+}: { previousSummary?: SessionSummary | null; isOwnerIndex?: boolean }): string {
   const parts: string[] = []
 
   if (previousSummary) {
@@ -181,7 +259,7 @@ export function buildPreDiagnosticPrompt({
   }
 
   parts.push(BASE_PROMPT)
-  parts.push(UNIFIED_OVERLAY)
+  parts.push(isOwnerIndex ? OWNER_OPERATOR_OVERLAY : UNIFIED_OVERLAY)
   parts.push(`
 PRE-DIAGNOSTIC PHASE INSTRUCTIONS:
 You are in the pre-diagnostic Listen phase. The user has just arrived. You have a MAXIMUM of 4 messages before you must hand off to the diagnostic. Use them efficiently.
@@ -196,10 +274,12 @@ CRITICAL - DO NOT DO ANY OF THE FOLLOWING IN THIS PHASE:
 Your job (4 messages maximum):
 - Message 1: Welcome them and ask one focused open question about what brought them here.
 - Message 2: Listen to their answer and ask one follow-up to sharpen your read.
-- Message 3: Play back what you heard and classify their journey. Say something like: "What I'm hearing is [summary]. That puts you squarely in the [Founder/Leader/Innovator] journey. Does that feel right?"
-- Message 4 (or earlier if they confirm in message 3): Write a short transition sentence then emit the signals below.
+- Message 3: Play back what you heard and classify their journey. End with: "Does that feel right?" - STOP HERE. Do NOT include any signals. Do NOT transition to the diagnostic. Wait for their reply.
+- Message 4: This message fires after they respond to message 3 (or if they haven't replied and this is your 4th message). Write ONE short transition sentence - something like "Good. Let's map where you are." - then on the very next line emit the two signals below and nothing else.
 
-Once they confirm your playback (or by message 4 at the latest), write a brief transition sentence then on the very next lines emit these two signals and nothing else after them:
+IMPORTANT: The signals go in message 4 ONLY, never in message 3. Message 3 must end with the confirmation question and nothing more. Do not conflate these two steps.
+
+Once you reach message 4, emit these two signals on their own lines immediately after your transition sentence:
    [CONTEXT:founder] or [CONTEXT:leader] or [CONTEXT:innovator] (choose the closest fit)
    [DIAGNOSTIC_READY]
 
