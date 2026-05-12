@@ -5,34 +5,34 @@ import { SignUp, useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
 const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
-  <div style={{ textAlign: ‘center’, marginBottom: ‘32px’ }}>
+  <div style={{ textAlign: 'center', marginBottom: '32px' }}>
     <p style={{
-      fontSize: ‘11px’,
-      fontWeight: ‘700’,
-      letterSpacing: ‘0.14em’,
-      color: ‘#1a1a1a’,
-      textTransform: ‘uppercase’,
-      marginBottom: ‘10px’,
+      fontSize: '11px',
+      fontWeight: '700',
+      letterSpacing: '0.14em',
+      color: '#1a1a1a',
+      textTransform: 'uppercase',
+      marginBottom: '10px',
     }}>
-      {isOwnerIndex ? "The Owner’s" : "The Reinventor’s Mindset™"}
+      {isOwnerIndex ? "The Owner's" : "The Reinventor's Mindset™"}
     </p>
     <h1 style={{
-      fontFamily: ‘var(--font-libre)’,
-      fontSize: ‘38px’,
-      fontWeight: ‘700’,
-      color: ‘#334a69’,
-      letterSpacing: ‘-0.8px’,
+      fontFamily: 'var(--font-libre)',
+      fontSize: '38px',
+      fontWeight: '700',
+      color: '#334a69',
+      letterSpacing: '-0.8px',
       lineHeight: 1,
-      marginBottom: ‘12px’,
+      marginBottom: '12px',
     }}>
       Index
     </h1>
     <div style={{
-      width: ‘32px’,
-      height: ‘2px’,
-      background: ‘linear-gradient(90deg, #334a69, #2A7B7B)’,
-      borderRadius: ‘999px’,
-      margin: ‘0 auto’,
+      width: '32px',
+      height: '2px',
+      background: 'linear-gradient(90deg, #334a69, #2A7B7B)',
+      borderRadius: '999px',
+      margin: '0 auto',
       opacity: 0.5,
     }} />
   </div>
