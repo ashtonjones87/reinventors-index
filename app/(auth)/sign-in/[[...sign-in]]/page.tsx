@@ -96,15 +96,7 @@ export default function SignInPage() {
         <BrandHeader isOwnerIndex={isOwnerIndex} />
 
         <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <SignIn
-            forceRedirectUrl="/home"
-            appearance={{
-              elements: {
-                headerTitle: { display: 'none' },
-                headerSubtitle: { display: 'none' },
-              },
-            }}
-          />
+          <SignIn forceRedirectUrl="/home" />
         </div>
       </div>
     </main>

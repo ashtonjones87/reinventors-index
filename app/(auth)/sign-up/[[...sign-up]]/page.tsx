@@ -169,15 +169,7 @@ export default function SignUpPage() {
         {/* Clerk form - only rendered after consent + button click */}
         {showForm ? (
           <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SignUp
-              forceRedirectUrl="/home"
-              appearance={{
-                elements: {
-                  headerTitle: { display: 'none' },
-                  headerSubtitle: { display: 'none' },
-                },
-              }}
-            />
+            <SignUp forceRedirectUrl="/home" />
           </div>
         ) : (
           <button
