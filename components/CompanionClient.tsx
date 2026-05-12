@@ -627,19 +627,17 @@ export default function CompanionClient({
             textTransform: 'uppercase',
             marginBottom: '2px',
           }}>
-            {isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™"}
+            {isOwnerIndex ? "The Owner's" : "The Reinventor's Mindset™"}
           </p>
-          {!isOwnerIndex && (
-            <p style={{
-              fontFamily: 'var(--font-libre)',
-              fontSize: '15px',
-              fontWeight: '700',
-              color: '#334a69',
-              lineHeight: 1,
-            }}>
-              Index
-            </p>
-          )}
+          <p style={{
+            fontFamily: 'var(--font-libre)',
+            fontSize: '15px',
+            fontWeight: '700',
+            color: '#334a69',
+            lineHeight: 1,
+          }}>
+            Index
+          </p>
         </div>
 
         {/* Right controls - desktop */}
