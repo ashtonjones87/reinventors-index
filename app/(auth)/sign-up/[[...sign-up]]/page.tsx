@@ -154,7 +154,7 @@ export default function SignUpPage() {
           }}>
             I agree to the{' '}
             <a
-              href="/privacy"
+              href={isOwnerIndex ? '/owner-privacy' : '/privacy'}
               target="_blank"
               rel="noopener noreferrer"
               onClick={e => e.stopPropagation()}

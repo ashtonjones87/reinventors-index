@@ -196,6 +196,7 @@ export default function CompanionClient({
             latestSummary={latestSummary}
             previousRadar={null}
             preDiagnostic={true}
+            isOwnerIndex={isOwnerIndex}
             onDiagnosticReady={handleDiagnosticReady}
           />
         </div>
@@ -856,6 +857,7 @@ export default function CompanionClient({
           previousRadar={prevRadarScores}
           detectedContext={detectedContext}
           preDiagnosticContext={preDiagnosticContext}
+          isOwnerIndex={isOwnerIndex}
         />
       </div>
     </div>

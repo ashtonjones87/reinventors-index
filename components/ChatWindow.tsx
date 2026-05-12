@@ -19,6 +19,7 @@ interface ChatWindowProps {
   detectedContext?: string | null
   preDiagnosticContext?: string | null
   preDiagnostic?: boolean
+  isOwnerIndex?: boolean
   onDiagnosticReady?: (context: string | null, messages: { role: string; content: string }[]) => void
 }
 
@@ -40,6 +41,7 @@ export default function ChatWindow({
   detectedContext,
   preDiagnosticContext,
   preDiagnostic = false,
+  isOwnerIndex = false,
   onDiagnosticReady,
 }: ChatWindowProps) {
   const { messages, isStreaming, error, sendMessage, retryLastMessage } = useChat(
@@ -409,7 +411,7 @@ export default function ChatWindow({
           </p>
           <div style={{ textAlign: 'right', marginTop: '4px' }}>
             <a
-              href="/privacy"
+              href={isOwnerIndex ? '/owner-privacy' : '/privacy'}
               target="_blank"
               rel="noopener noreferrer"
               style={{
