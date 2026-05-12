@@ -116,22 +116,22 @@ export default function CompanionClient({
             zIndex: 60,
           }}
         >
-          <div style={{ display: ‘flex’, flexDirection: ‘column’, alignItems: ‘center’ }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <p style={{
-              fontSize: ‘10px’,
-              fontWeight: ‘700’,
-              letterSpacing: ‘0.14em’,
-              color: ‘#1a1a1a’,
-              textTransform: ‘uppercase’,
-              marginBottom: ‘2px’,
+              fontSize: '10px',
+              fontWeight: '700',
+              letterSpacing: '0.14em',
+              color: '#1a1a1a',
+              textTransform: 'uppercase',
+              marginBottom: '2px',
             }}>
-              {isOwnerIndex ? "The Owner’s" : "The Reinventor’s Mindset™"}
+              {isOwnerIndex ? "The Owner's" : "The Reinventor's Mindset™"}
             </p>
             <p style={{
-              fontFamily: ‘var(--font-libre)’,
-              fontSize: ‘15px’,
-              fontWeight: ‘700’,
-              color: ‘#334a69’,
+              fontFamily: 'var(--font-libre)',
+              fontSize: '15px',
+              fontWeight: '700',
+              color: '#334a69',
               lineHeight: 1,
             }}>
               Index
