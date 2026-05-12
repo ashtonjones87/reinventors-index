@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { SignIn, useAuth } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 
-const BrandHeader = () => (
+const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
   <div style={{ textAlign: 'center', marginBottom: '32px' }}>
     <p style={{
       fontSize: '11px',
@@ -14,7 +14,7 @@ const BrandHeader = () => (
       textTransform: 'uppercase',
       marginBottom: '10px',
     }}>
-      The Reinventor&apos;s Mindset™
+      {isOwnerIndex ? "The Owner's" : "The Reinventor's Mindset™"}
     </p>
     <h1 style={{
       fontFamily: 'var(--font-libre)',
@@ -38,12 +38,22 @@ const BrandHeader = () => (
   </div>
 )
 
+function isOwnerDomain() {
+  if (typeof window === 'undefined') return false
+  const h = window.location.hostname
+  return h.includes('ownerindex') || h.includes('owner.reinventor')
+}
+
 export default function SignInPage() {
   const [mounted, setMounted] = useState(false)
+  const [isOwnerIndex, setIsOwnerIndex] = useState(false)
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
-  useEffect(() => { setMounted(true) }, [])
+  useEffect(() => {
+    setMounted(true)
+    setIsOwnerIndex(isOwnerDomain())
+  }, [])
 
   if (isSignedIn) {
     router.replace('/home')
@@ -61,7 +71,7 @@ export default function SignInPage() {
         padding: '24px',
       }}>
         <div style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <BrandHeader />
+          <BrandHeader isOwnerIndex={isOwnerIndex} />
         </div>
       </main>
     )
@@ -83,10 +93,18 @@ export default function SignInPage() {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <BrandHeader />
+        <BrandHeader isOwnerIndex={isOwnerIndex} />
 
         <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <SignIn forceRedirectUrl="/home" />
+          <SignIn
+            forceRedirectUrl="/home"
+            appearance={{
+              elements: {
+                headerTitle: { display: 'none' },
+                headerSubtitle: { display: 'none' },
+              },
+            }}
+          />
         </div>
       </div>
     </main>
