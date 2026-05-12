@@ -11,8 +11,7 @@ const isPublicRoute = createRouteMatcher([
 ])
 
 function isOwnerIndexHost(host: string): boolean {
-  // TODO: remove localhost before deploying - for local testing only
-  return host.includes('ownerindex.ai') || host.includes('ownerindex.localhost') || host.includes('localhost')
+  return host.includes('ownerindex.ai') || host.includes('ownerindex.localhost') || host.includes('owner.reinventor.ai')
 }
 
 export default clerkMiddleware(async (auth, request) => {
