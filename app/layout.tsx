@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Inter, Libre_Baskerville } from 'next/font/google'
+import { headers } from 'next/headers'
 import './globals.css'
 
 const inter = Inter({
@@ -22,16 +23,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const headersList = await headers()
+  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
+
+  const appName = isOwnerIndex ? "The Owner's Index" : "Reinventor's Mindset™ Index"
+
   return (
     <ClerkProvider
       localization={{
-        signIn: { start: { title: "Sign in to Reinventor's Mindset™ Index" } },
-        signUp: { start: { title: "Sign up for Reinventor's Mindset™ Index" } },
+        signIn: { start: { title: `Sign in to ${appName}` } },
+        signUp: { start: { title: `Sign up for ${appName}` } },
       }}
       appearance={{
         variables: {
