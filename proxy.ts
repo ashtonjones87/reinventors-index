@@ -17,6 +17,14 @@ function isOwnerIndexHost(host: string): boolean {
 
 export default clerkMiddleware(async (auth, request) => {
   const host = request.headers.get('host') ?? ''
+
+  // Redirect www to non-www so Clerk domain matches
+  if (host.startsWith('www.')) {
+    const url = new URL(request.url)
+    url.host = host.replace(/^www\./, '')
+    return NextResponse.redirect(url, 308)
+  }
+
   const isOwnerIndex = isOwnerIndexHost(host)
 
   const requestHeaders = new Headers(request.headers)
