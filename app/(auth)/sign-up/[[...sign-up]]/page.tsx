@@ -35,32 +35,6 @@ const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
       margin: '0 auto',
       opacity: 0.5,
     }} />
-    {isOwnerIndex && (
-      <>
-        <p style={{
-          fontSize: '16px',
-          fontWeight: '600',
-          color: '#334a69',
-          fontFamily: 'var(--font-inter)',
-          marginTop: '20px',
-          marginBottom: '10px',
-          textAlign: 'center',
-        }}>
-          How dependent is your business on you?
-        </p>
-        <p style={{
-          fontSize: '13px',
-          color: '#6B7280',
-          fontFamily: 'var(--font-inter)',
-          lineHeight: '1.65',
-          textAlign: 'center',
-          maxWidth: '320px',
-          margin: '0 auto 8px',
-        }}>
-          The Owner's Index is for founder-operators considering a transition over the next 12 to 36 months — whether that's sale, succession, or stepping back.
-        </p>
-      </>
-    )}
   </div>
 )
 
@@ -191,6 +165,30 @@ export default function SignUpPage() {
             . I understand that my session data will be stored to enable personalised coaching, and that anonymised data will be used for academic research. I confirm I am 18 years or older.
           </p>
         </label>
+
+        {/* Owner's Index framing — shown between checkbox and button */}
+        {isOwnerIndex && (
+          <div style={{ width: '100%', marginBottom: '16px' }}>
+            <p style={{
+              fontSize: '13px',
+              fontWeight: '600',
+              color: '#334a69',
+              fontFamily: 'var(--font-inter)',
+              marginBottom: '6px',
+            }}>
+              How dependent is your business on you?
+            </p>
+            <p style={{
+              fontSize: '13px',
+              color: '#6B7280',
+              fontFamily: 'var(--font-inter)',
+              lineHeight: '1.65',
+              margin: 0,
+            }}>
+              The Owner's Index is for founder-operators considering a transition over the next 12 to 36 months, whether that's sale, succession or stepping back.
+            </p>
+          </div>
+        )}
 
         {/* Clerk form - only rendered after consent + button click */}
         {showForm ? (
