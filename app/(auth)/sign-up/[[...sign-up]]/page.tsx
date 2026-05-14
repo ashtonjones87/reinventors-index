@@ -166,9 +166,9 @@ export default function SignUpPage() {
           </p>
         </label>
 
-        {/* Owner's Index framing — shown between checkbox and button */}
-        {isOwnerIndex && (
-          <div style={{ width: '100%', marginBottom: '16px' }}>
+        {/* Owner's Index framing — shown only before form appears */}
+        {isOwnerIndex && !showForm && (
+          <div style={{ width: '100%', marginBottom: '16px', textAlign: 'center' }}>
             <p style={{
               fontSize: '13px',
               fontWeight: '600',
