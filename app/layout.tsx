@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
 import { Inter, Libre_Baskerville } from 'next/font/google'
-import { headers } from 'next/headers'
 import './globals.css'
 
 const inter = Inter({
@@ -15,14 +14,12 @@ const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre',
 })
 
-export async function generateMetadata(): Promise<Metadata> {
-  const headersList = await headers()
-  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
-  return {
-    title: isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™ Index",
-    description: 'AI coaching companion by Ashton Jones',
-    icons: { icon: '/icon.png' },
-  }
+export const metadata: Metadata = {
+  title: process.env.NEXT_PUBLIC_SITE_NAME || "The Reinventor's Mindset™ Index",
+  description: 'AI coaching companion by Ashton Jones',
+  icons: {
+    icon: '/icon.png',
+  },
 }
 
 export default function RootLayout({
