@@ -100,7 +100,7 @@ export default function ChatWindow({
       // Delay so user can read the final AI message before the diagnostic starts
       setTimeout(() => {
         onDiagnosticReady(context, messages)
-      }, 3500)
+      }, 5000)
     }
   }, [messages, isStreaming, preDiagnostic, onDiagnosticReady])
 
