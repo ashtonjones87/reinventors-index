@@ -1,9 +1,4 @@
-import { headers } from 'next/headers'
-
-export default async function CompanionLoading() {
-  const headersList = await headers()
-  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
-
+export default function CompanionLoading() {
   return (
     <main style={{
       display: 'flex',
@@ -15,18 +10,6 @@ export default async function CompanionLoading() {
       padding: '24px',
     }}>
       <div style={{ textAlign: 'center' }}>
-        {/* Label */}
-        <p style={{
-          fontSize: '11px',
-          fontWeight: '700',
-          letterSpacing: '0.14em',
-          color: '#1a1a1a',
-          textTransform: 'uppercase',
-          marginBottom: '14px',
-        }}>
-          {isOwnerIndex ? "The Owner's" : "The Reinventor’s Mindset™"}
-        </p>
-
         {/* Big serif title */}
         <p style={{
           fontFamily: 'var(--font-libre), Georgia, serif',
