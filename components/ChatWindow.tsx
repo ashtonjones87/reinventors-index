@@ -163,7 +163,7 @@ export default function ChatWindow({
                 textTransform: 'uppercase',
                 marginBottom: '10px',
               }}>
-                The Reinventor&apos;s Mindset™
+                {isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™"}
               </p>
               {preDiagnostic ? (
                 <>
