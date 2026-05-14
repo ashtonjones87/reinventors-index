@@ -101,6 +101,30 @@ export default function SignUpPage() {
       }}>
         <BrandHeader isOwnerIndex={isOwnerIndex} />
 
+        {/* Owner's Index framing — shown above checkbox, before form appears */}
+        {isOwnerIndex && !showForm && (
+          <div style={{ width: '100%', marginBottom: '20px', textAlign: 'center' }}>
+            <p style={{
+              fontSize: '13px',
+              fontWeight: '600',
+              color: '#334a69',
+              fontFamily: 'var(--font-inter)',
+              marginBottom: '6px',
+            }}>
+              How dependent is your business on you?
+            </p>
+            <p style={{
+              fontSize: '13px',
+              color: '#6B7280',
+              fontFamily: 'var(--font-inter)',
+              lineHeight: '1.65',
+              margin: 0,
+            }}>
+              The Owner's Index is for founder-operators considering a transition over the next 12 to 36 months, whether that's sale, succession or stepping back.
+            </p>
+          </div>
+        )}
+
         {/* Consent checkbox */}
         <label style={{
           display: 'flex',
@@ -165,30 +189,6 @@ export default function SignUpPage() {
             . I understand that my session data will be stored to enable personalised coaching, and that anonymised data will be used for academic research. I confirm I am 18 years or older.
           </p>
         </label>
-
-        {/* Owner's Index framing — shown only before form appears */}
-        {isOwnerIndex && !showForm && (
-          <div style={{ width: '100%', marginBottom: '16px', textAlign: 'center' }}>
-            <p style={{
-              fontSize: '13px',
-              fontWeight: '600',
-              color: '#334a69',
-              fontFamily: 'var(--font-inter)',
-              marginBottom: '6px',
-            }}>
-              How dependent is your business on you?
-            </p>
-            <p style={{
-              fontSize: '13px',
-              color: '#6B7280',
-              fontFamily: 'var(--font-inter)',
-              lineHeight: '1.65',
-              margin: 0,
-            }}>
-              The Owner's Index is for founder-operators considering a transition over the next 12 to 36 months, whether that's sale, succession or stepping back.
-            </p>
-          </div>
-        )}
 
         {/* Clerk form - only rendered after consent + button click */}
         {showForm ? (
