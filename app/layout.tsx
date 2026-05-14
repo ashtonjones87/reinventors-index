@@ -25,22 +25,13 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const headersList = await headers()
-  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
-
-  const appName = isOwnerIndex ? "The Owner's Index" : "Reinventor's Mindset™ Index"
-
   return (
     <ClerkProvider
-      localization={{
-        signIn: { start: { title: `Sign in to ${appName}` } },
-        signUp: { start: { title: `Sign up for ${appName}` } },
-      }}
       appearance={{
         variables: {
           colorPrimary: '#334a69',
