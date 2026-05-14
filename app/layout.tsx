@@ -15,12 +15,14 @@ const libreBaskerville = Libre_Baskerville({
   variable: '--font-libre',
 })
 
-export const metadata: Metadata = {
-  title: "The Reinventor's Mindset™ Index",
-  description: 'AI coaching companion by Ashton Jones',
-  icons: {
-    icon: '/icon.png',
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = await headers()
+  const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
+  return {
+    title: isOwnerIndex ? "The Owner's Index" : "The Reinventor's Mindset™ Index",
+    description: 'AI coaching companion by Ashton Jones',
+    icons: { icon: '/icon.png' },
+  }
 }
 
 export default async function RootLayout({
