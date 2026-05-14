@@ -20,8 +20,8 @@ export default clerkMiddleware(async (auth, request) => {
 
   // Redirect www to non-www so Clerk domain matches
   if (host.startsWith('www.')) {
-    const url = new URL(request.url)
-    url.host = host.replace(/^www\./, '')
+    const url = request.nextUrl.clone()
+    url.host = host.substring(4)
     return NextResponse.redirect(url, 308)
   }
 
