@@ -165,6 +165,18 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
     await submitAnswers(answers)
   }
 
+  function handleBack() {
+    if (currentIndex === 0 || showAck || isSubmitting) return
+    const newAnswers = answers.slice(0, -1)
+    setAnswers(newAnswers)
+    setCurrentIndex(currentIndex - 1)
+    setSelectedRating(null)
+    setShowAck(false)
+    setError(null)
+  }
+
+  const canGoBack = currentIndex >= 1 && currentIndex <= 14 && !showAck && !isSubmitting
+
   const currentStatement = DIAGNOSTIC_STATEMENTS[currentIndex]
   const currentDimension = getDimensionForIndex(currentIndex)
   const showFraming = isFirstInDimension(currentIndex)
@@ -309,6 +321,35 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           ))}
         </div>
       </div>
+
+      {/* Back button - questions 2 to 15 only */}
+      {canGoBack && (
+        <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+          <button
+            onClick={handleBack}
+            style={{
+              fontSize: '12px',
+              fontWeight: '500',
+              color: '#9CA3AF',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '6px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'color 0.15s',
+            }}
+            onMouseOver={e => { e.currentTarget.style.color = '#334a69' }}
+            onMouseOut={e => { e.currentTarget.style.color = '#9CA3AF' }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Back
+          </button>
+        </div>
+      )}
 
       {/* Acknowledgement */}
       {showAck && !isSubmitting && !error && (
