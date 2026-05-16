@@ -12,7 +12,7 @@ function ScoreBar({ score, isProtect }: { score: number; isProtect: boolean }) {
   const pct = (score / 10) * 100
   const barColor = isProtect
     ? '#2A7B7B'
-    : score >= 7 ? '#C84B31' : score >= 4 ? '#C17D10' : '#2A7B7B'
+    : score >= 6.7 ? '#C84B31' : score >= 3.4 ? '#C17D10' : '#2A7B7B'
 
   return (
     <div style={{
@@ -233,8 +233,8 @@ export default function FounderDependencyMap({ ownerScores, prevOwnerScores, onW
                   fontSize: '10px',
                   fontWeight: '700',
                   color: dim.isProtect ? '#2A7B7B' :
-                    dim.score >= 7 ? '#C84B31' :
-                    dim.score >= 4 ? '#C17D10' : '#2A7B7B',
+                    dim.score >= 6.7 ? '#C84B31' :
+                    dim.score >= 3.4 ? '#C17D10' : '#2A7B7B',
                   fontFamily: 'var(--font-inter)',
                   letterSpacing: '0.04em',
                   textTransform: 'uppercase',

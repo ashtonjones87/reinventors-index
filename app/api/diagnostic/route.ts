@@ -1,6 +1,6 @@
 ﻿import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { scoreResponses } from '@/lib/diagnostic'
+import { scoreResponses, scoreOwnerResponses } from '@/lib/diagnostic'
 import { saveRadar, upsertUser } from '@/lib/supabase/queries'
 
 export async function POST(req: NextRequest) {
@@ -40,7 +40,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Score the responses
+    // Branch by domain: Owner's Index uses its own scoring methodology
+    const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
+
+    // Score the responses (different formula per product)
     const {
       radarScores,
       readinessScore,
@@ -48,7 +51,7 @@ export async function POST(req: NextRequest) {
       rangeBehaviour,
       rangeLeadership,
       rangeAwareness,
-    } = scoreResponses(answers)
+    } = isOwnerIndex ? scoreOwnerResponses(answers) : scoreResponses(answers)
 
     // Build raw responses array for storage
     const rawResponses = answers.map((answer: number, index: number) => ({

@@ -1,5 +1,10 @@
-// Owner's Index scoring - derived from Mindset radar pole scores
-// Each pole is 0–5 (averaged from 2 questions). Pairs sum to 0–10.
+// Owner's Index scoring - per Diagnostic Implementation Brief, May 2026
+// New methodology:
+//   - dimension = ((sum_4_inverted_answers - 4) / 16) * 10
+//     equivalent from pole averages: ((20 - 2*(poleA + poleB)) / 16) * 10
+//   - Founder Dependency Score = average of 4 dimensions
+//   - Watermark Strength = stdev of 4 dimensions scaled by /5.0 to 0-10
+// Bands: Low (0-3.3), Moderate (3.4-6.6), High (6.7-10)
 
 export interface RadarScores {
   intuitive: number
@@ -16,7 +21,7 @@ export interface RadarScores {
 export interface OwnerDimension {
   key: 'process' | 'information' | 'decision' | 'energy' | 'taste'
   label: string
-  score: number          // 0–10
+  score: number          // 0-10
   levelLabel: string
   pillars: string[]
   isProtect: boolean     // true = Taste (higher = good), false = dependency (higher = problem)
@@ -29,31 +34,59 @@ export interface OwnerScores {
   energy: number
   taste: number
   founderDependencyScore: number   // avg of process, information, decision, energy
-  watermarkStrength: number        // = taste
+  watermarkStrength: number        // stdev of 4 dimensions scaled to 0-10
   dimensions: OwnerDimension[]
 }
 
+// Band labels per brief
 function dependencyLabel(score: number): string {
-  if (score >= 7) return 'High Dependency'
-  if (score >= 4) return 'Moderate Dependency'
+  if (score >= 6.7) return 'High Dependency'
+  if (score >= 3.4) return 'Moderate Dependency'
   return 'Low Dependency'
 }
 
 function watermarkLabel(score: number): string {
-  if (score >= 7) return 'Strong Watermark'
-  if (score >= 4) return 'Defined Watermark'
-  return 'Emerging Watermark'
+  if (score >= 6.7) return 'Defined Watermark'
+  if (score >= 3.4) return 'Emerging Watermark'
+  return 'Undefined Watermark'
+}
+
+// Compute a single dependency dimension from its two pole averages using the new formula
+// pole averages are 1-5; sum of two poles is 2-10
+// new dimension = ((20 - 2*(poleA + poleB)) / 16) * 10
+function dimFromPoles(poleA: number, poleB: number): number {
+  const raw = ((20 - 2 * (poleA + poleB)) / 16) * 10
+  return Math.max(0, Math.min(10, raw))
 }
 
 export function computeOwnerScores(radar: RadarScores): OwnerScores {
-  const process     = Math.min(10, Math.max(0, 10 - (radar.cognitive + radar.intuitive)))
-  const information = Math.min(10, Math.max(0, 10 - (radar.reactive + radar.collaborative)))
-  const decision    = Math.min(10, Math.max(0, 10 - (radar.directive + radar.proactive)))
-  const energy      = Math.min(10, Math.max(0, 10 - (radar.spiritual_purpose + radar.analytical)))
-  const taste       = radar.readiness_score ?? 5
+  // Pairs per brief:
+  // Process: cognitive + intuitive
+  // Information: reactive + collaborative
+  // Decision: directive + proactive
+  // Energy: spiritual_purpose + analytical
+  const process     = dimFromPoles(radar.cognitive, radar.intuitive)
+  const information = dimFromPoles(radar.reactive, radar.collaborative)
+  const decision    = dimFromPoles(radar.directive, radar.proactive)
+  const energy      = dimFromPoles(radar.spiritual_purpose, radar.analytical)
 
   const founderDependencyScore = parseFloat(((process + information + decision + energy) / 4).toFixed(1))
-  const watermarkStrength = taste
+
+  // Watermark Strength: prefer the stored value (set by scoreOwnerResponses via readiness_score),
+  // otherwise compute from dimension spread.
+  let watermarkStrength: number
+  if (typeof radar.readiness_score === 'number') {
+    watermarkStrength = radar.readiness_score
+  } else {
+    const dims = [process, information, decision, energy]
+    const mean = (process + information + decision + energy) / 4
+    const variance = dims.reduce((s, d) => s + Math.pow(d - mean, 2), 0) / dims.length
+    const stdev = Math.sqrt(variance)
+    watermarkStrength = Math.min(10, (stdev / 5.0) * 10)
+  }
+  watermarkStrength = parseFloat(watermarkStrength.toFixed(1))
+
+  const taste = watermarkStrength
 
   const dimensions: OwnerDimension[] = [
     {
@@ -77,7 +110,7 @@ export function computeOwnerScores(radar: RadarScores): OwnerScores {
       label: 'Decision Dependency',
       score: decision,
       levelLabel: dependencyLabel(decision),
-      pillars: ['O5 - Raise The Average', 'O6 - Don\'t Apologise'],
+      pillars: ['O5 - Raise The Average', "O6 - Don't Apologise"],
       isProtect: false,
     },
     {
@@ -101,14 +134,15 @@ export function computeOwnerScores(radar: RadarScores): OwnerScores {
   return { process, information, decision, energy, taste, founderDependencyScore, watermarkStrength, dimensions }
 }
 
+// Subtext labels for top headline cards (per brief)
 export function founderDependencyLabel(score: number): string {
-  if (score >= 7) return 'High dependency'
-  if (score >= 4) return 'Moderate dependency'
+  if (score >= 6.7) return 'High dependency'
+  if (score >= 3.4) return 'Moderate dependency'
   return 'Highly extractable'
 }
 
 export function watermarkStrengthLabel(score: number): string {
-  if (score >= 7) return 'Strong watermark'
-  if (score >= 4) return 'Defined watermark'
-  return 'Emerging watermark'
+  if (score >= 6.7) return 'Defined watermark'
+  if (score >= 3.4) return 'Emerging watermark'
+  return 'Undefined watermark'
 }

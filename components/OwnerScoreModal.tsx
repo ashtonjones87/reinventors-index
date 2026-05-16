@@ -30,15 +30,15 @@ const Body = ({ children }: { children: React.ReactNode }) => (
 )
 
 function fdNarrative(score: number): string {
-  if (score >= 7) return "Your business runs on you. Most of what makes it work hasn't been encoded outside your head and habits. This isn't a flaw - it's how every founder-led business starts. The next chapter is the extraction work."
-  if (score >= 4) return "Your business runs partly on systems and partly on you. There's real progress here, and there's real work left. The next chapter is about identifying which remaining dependencies actually matter."
+  if (score >= 6.7) return "Your business runs on you. Most of what makes it work hasn't been encoded outside your head and habits. This isn't a flaw - it's how every founder-led business starts. The next chapter is the extraction work."
+  if (score >= 3.4) return "Your business runs partly on systems and partly on you. There's real progress here, and there's real work left. The next chapter is about identifying which remaining dependencies actually matter."
   return "You've built a business that doesn't need you running through every part of it. The fundamental work of extraction is done. The next chapter is about what you do with that freedom."
 }
 
 function watermarkNarrative(score: number): string {
-  if (score >= 7) return "There's something about your business that competitors can't copy - a way of seeing, a set of standards, a feel that customers come for. This is your terroir. Naming it explicitly is what lets you decide what happens to it."
-  if (score >= 4) return "Your watermark is forming. Customers and team can sense something distinctive but you may not have named it yet. Articulate it before extraction efforts erode what they're trying to scale."
-  return "The watermark is faint. The business hasn't yet differentiated its taste in a way that's irreducibly yours. This is a question about distinctiveness, not extraction - and it sets the ceiling on what the business is worth without you in it."
+  if (score >= 6.7) return "Defined watermark - higher means more distinctive. There's something about your business that competitors can't copy, a way of seeing, a set of standards, a feel that customers come for. This is your terroir. Naming it explicitly is what lets you decide what happens to it."
+  if (score >= 3.4) return "Emerging watermark - clarity building. Customers and team can sense something distinctive but you may not have named it yet. Articulate it before extraction efforts erode what they're trying to scale."
+  return "Undefined watermark - hard to separate you from the business. The business hasn't yet differentiated its taste in a way that's irreducibly yours. This is a question about distinctiveness, not extraction, and it sets the ceiling on what the business is worth without you in it."
 }
 
 function dimensionNarrative(dim: OwnerDimension): string {
@@ -71,8 +71,8 @@ function dimensionNarrative(dim: OwnerDimension): string {
   }
 
   const band = dim.isProtect
-    ? (dim.score >= 7 ? 'high' : dim.score >= 4 ? 'moderate' : 'low')
-    : (dim.score >= 7 ? 'high' : dim.score >= 4 ? 'moderate' : 'low')
+    ? (dim.score >= 6.7 ? 'high' : dim.score >= 3.4 ? 'moderate' : 'low')
+    : (dim.score >= 6.7 ? 'high' : dim.score >= 3.4 ? 'moderate' : 'low')
 
   return narratives[dim.key]?.[band] ?? ''
 }

@@ -1,12 +1,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { DIAGNOSTIC_STATEMENTS, DIMENSION_FRAMINGS } from '@/lib/diagnostic'
+import {
+  DIAGNOSTIC_STATEMENTS,
+  DIMENSION_FRAMINGS,
+  OWNER_DIAGNOSTIC_STATEMENTS,
+  OWNER_DIMENSION_FRAMINGS,
+} from '@/lib/diagnostic'
 
 type DetectedContext = 'founder' | 'leader' | 'innovator' | null
 
 interface DiagnosticFlowProps {
   detectedContext?: DetectedContext
+  isOwnerIndex?: boolean
   onComplete: (
     scores: any,
     readinessScore: number,
@@ -47,7 +53,9 @@ function isFirstInDimension(index: number) {
   return index % 4 === 0
 }
 
-export default function DiagnosticFlow({ detectedContext, onComplete }: DiagnosticFlowProps) {
+export default function DiagnosticFlow({ detectedContext, isOwnerIndex = false, onComplete }: DiagnosticFlowProps) {
+  // Pick question set + framings based on product
+  const STATEMENTS = isOwnerIndex ? OWNER_DIAGNOSTIC_STATEMENTS : DIAGNOSTIC_STATEMENTS
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
   const [selectedRating, setSelectedRating] = useState<number | null>(null)
@@ -177,12 +185,26 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
 
   const canGoBack = currentIndex >= 1 && currentIndex <= 14 && !showAck && !isSubmitting
 
-  const currentStatement = DIAGNOSTIC_STATEMENTS[currentIndex]
+  const currentStatement = STATEMENTS[currentIndex]
   const currentDimension = getDimensionForIndex(currentIndex)
   const showFraming = isFirstInDimension(currentIndex)
   const showDimensionLabel = !isFirstInDimension(currentIndex)
-  const framingText = DIMENSION_FRAMINGS[context][currentDimension]
+  const framingText = isOwnerIndex
+    ? OWNER_DIMENSION_FRAMINGS[currentDimension]
+    : DIMENSION_FRAMINGS[context][currentDimension]
   const progress = Math.round((currentIndex / 16) * 100)
+
+  // Display label for the current dimension header
+  // Owner's Index shows dependency-named dimensions; Mindset shows decision_making/behaviour/etc
+  const OWNER_DIM_LABELS: Record<string, string> = {
+    decision_making: 'Process Dependency',
+    behaviour: 'Information Dependency',
+    leadership: 'Decision Dependency',
+    awareness: 'Energy Dependency',
+  }
+  const dimensionLabel = isOwnerIndex
+    ? OWNER_DIM_LABELS[currentDimension]
+    : currentDimension.replace('_', ' ')
 
   return (
     <div style={{ width: '100%', maxWidth: '720px', margin: '0 auto' }}>
@@ -202,7 +224,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           textTransform: 'uppercase',
           opacity: 0.75,
         }}>
-          Mindset Diagnostic
+          {isOwnerIndex ? "Owner's Diagnostic" : 'Mindset Diagnostic'}
         </p>
         <p style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: '500' }}>
           {currentIndex} <span style={{ opacity: 0.5 }}>/ 16</span>
@@ -241,7 +263,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
             textTransform: 'uppercase',
             marginBottom: '7px',
           }}>
-            {currentDimension.replace('_', ' ')}
+            {dimensionLabel}
           </p>
           <p style={{
             fontSize: '14px',
@@ -265,7 +287,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           marginBottom: '16px',
           opacity: 0.8,
         }}>
-          {currentDimension.replace('_', ' ')}
+          {dimensionLabel}
         </p>
       )}
 
@@ -372,7 +394,7 @@ export default function DiagnosticFlow({ detectedContext, onComplete }: Diagnost
           fontSize: '13px',
           letterSpacing: '0.02em',
         }}>
-          Mapping your mindset&nbsp;·&nbsp;·&nbsp;·
+          {isOwnerIndex ? 'Mapping your dependencies' : 'Mapping your mindset'}&nbsp;·&nbsp;·&nbsp;·
         </p>
       )}
 

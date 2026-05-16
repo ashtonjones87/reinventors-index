@@ -263,6 +263,7 @@ export default function CompanionClient({
 
           <DiagnosticFlow
             detectedContext={detectedContext as any}
+            isOwnerIndex={isOwnerIndex}
             onComplete={handleDiagnosticComplete}
           />
         </div>

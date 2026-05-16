@@ -146,6 +146,61 @@ export const DIMENSION_FRAMINGS = {
 }
 
 // ============================================
+// OWNER'S INDEX - 16 DIAGNOSTIC STATEMENTS
+// Business-dependency questions. Higher answer = more independent.
+// ============================================
+
+export const OWNER_DIAGNOSTIC_STATEMENTS = [
+  // Process Dependency
+  // Cognitive pole - O1: Free Yourself
+  { id: 1, statement: 'My business has documented processes that run without my direct involvement.', pole: 'cognitive', dimension: 'decision_making' },
+  { id: 2, statement: 'A competent operator could step into my role and keep day-to-day operations running within 90 days.', pole: 'cognitive', dimension: 'decision_making' },
+  // Intuitive pole - O2: Make It Repeatable
+  { id: 3, statement: 'The way we deliver our core product or service follows a repeatable system, not my personal habits.', pole: 'intuitive', dimension: 'decision_making' },
+  { id: 4, statement: "Our quality standards are embedded in checklists and processes, not in my instinct for when something isn't right.", pole: 'intuitive', dimension: 'decision_making' },
+
+  // Information Dependency
+  // Reactive pole - O3: Write Your Recipe
+  { id: 5, statement: 'Our pricing logic, supplier terms and key client preferences are stored in systems my team can access without me.', pole: 'reactive', dimension: 'behaviour' },
+  { id: 6, statement: 'A new employee can become fully productive using documented materials rather than shadowing me.', pole: 'reactive', dimension: 'behaviour' },
+  // Collaborative pole - O4: Make It Visible
+  { id: 7, statement: 'My team can read the early warning signals in the business - client churn risk, team issues, market shifts - without relying on my intuition.', pole: 'collaborative', dimension: 'behaviour' },
+  { id: 8, statement: 'We have dashboards or reporting that surface the information I used to carry in my head.', pole: 'collaborative', dimension: 'behaviour' },
+
+  // Decision Dependency
+  // Directive pole - O5: Raise The Average
+  { id: 9, statement: 'My team makes most operational decisions without escalating to me.', pole: 'directive', dimension: 'leadership' },
+  { id: 10, statement: 'Someone other than me has authority to approve significant financial commitments.', pole: 'directive', dimension: 'leadership' },
+  // Pro-active pole - O6: Don't Apologise
+  { id: 11, statement: "I accept that my team's decisions at 80% of my standard are better than bottlenecking every decision through me.", pole: 'proactive', dimension: 'leadership' },
+  { id: 12, statement: 'I have deliberately stopped reviewing work that my team can handle to an acceptable level.', pole: 'proactive', dimension: 'leadership' },
+
+  // Energy Dependency
+  // Spiritual pole - O7: Subtract To Scale
+  { id: 13, statement: 'The majority of my week is spent on work that genuinely requires my specific expertise and judgment.', pole: 'spiritual_purpose', dimension: 'awareness' },
+  { id: 14, statement: "I have actively eliminated tasks from my week over the past 12 months that didn't require me personally.", pole: 'spiritual_purpose', dimension: 'awareness' },
+  // Analytical pole - O8: No Loose Ends
+  { id: 15, statement: 'When I hand something off, the transfer is complete - clear brief, context, authority and follow-up structure.', pole: 'analytical', dimension: 'awareness' },
+  { id: 16, statement: "My team does not come back to me on tasks I've already delegated because the handover was incomplete.", pole: 'analytical', dimension: 'awareness' },
+]
+
+// ============================================
+// OWNER'S INDEX - DIMENSION FRAMINGS
+// Shown before each block of 4 questions
+// ============================================
+
+export const OWNER_DIMENSION_FRAMINGS = {
+  decision_making:
+    "Every business encodes its founder's decision-making habits - the gut calls, the instincts, the shortcuts that work but aren't written down. Let's measure how much of that lives in systems versus in your head.",
+  behaviour:
+    "Most founders started by doing everything themselves. The question is whether the business has outgrown that - whether you're still reacting to every problem personally or whether you've built the muscle to hand things off cleanly. Let's find out.",
+  leadership:
+    "A buyer doesn't acquire a founder - they acquire a team. Let's measure whether your people can read the business, make decisions and operate at a standard that holds without you in the room.",
+  awareness:
+    "The hardest thing for a founder to see clearly is where their own time goes - and whether the work consuming their week is the work that actually requires them. Let's map where your energy is going versus where it should be.",
+}
+
+// ============================================
 // SCORING LOGIC
 // ============================================
 
@@ -209,5 +264,88 @@ export function scoreResponses(answers: number[]): ReadinessScores {
     rangeLeadership,
     rangeAwareness,
     readinessScore,
+  }
+}
+
+// ============================================
+// OWNER'S INDEX SCORING
+// Per Owner's Index Diagnostic Implementation Brief - May 2026
+// invert (6 - raw), sum per dimension, scale to 0-10
+// Watermark = stdev of 4 dimension scores, scaled to 0-10
+// ============================================
+
+export interface OwnerDiagnosticResult {
+  radarScores: RadarScores
+  process: number
+  information: number
+  decision: number
+  energy: number
+  founderDependencyScore: number
+  watermarkStrength: number
+  rangeDecisionMaking: number
+  rangeBehaviour: number
+  rangeLeadership: number
+  rangeAwareness: number
+  readinessScore: number
+}
+
+export function scoreOwnerResponses(answers: number[]): OwnerDiagnosticResult {
+  // Owner's Index pole mapping (per brief):
+  // Q1-2 -> Cognitive (Process), Q3-4 -> Intuitive (Process)
+  // Q5-6 -> Reactive (Information), Q7-8 -> Collaborative (Information)
+  // Q9-10 -> Directive (Decision), Q11-12 -> Pro-active (Decision)
+  // Q13-14 -> Spiritual (Energy), Q15-16 -> Analytical (Energy)
+  const radarScores: RadarScores = {
+    cognitive: (answers[0] + answers[1]) / 2,
+    intuitive: (answers[2] + answers[3]) / 2,
+    reactive: (answers[4] + answers[5]) / 2,
+    collaborative: (answers[6] + answers[7]) / 2,
+    directive: (answers[8] + answers[9]) / 2,
+    proactive: (answers[10] + answers[11]) / 2,
+    spiritual_purpose: (answers[12] + answers[13]) / 2,
+    analytical: (answers[14] + answers[15]) / 2,
+  }
+
+  // Dimension score - invert each answer (6 - raw), sum 4, scale (sum - 4) / 16 * 10
+  function dimScore(qStart: number): number {
+    const sumInverted = answers.slice(qStart, qStart + 4).reduce((s, a) => s + (6 - a), 0)
+    const raw = ((sumInverted - 4) / 16) * 10
+    return Math.max(0, Math.min(10, raw))
+  }
+
+  const process = dimScore(0)
+  const information = dimScore(4)
+  const decision = dimScore(8)
+  const energy = dimScore(12)
+
+  // Founder Dependency Score = average of 4 dimensions
+  const founderDependencyScore = (process + information + decision + energy) / 4
+
+  // Watermark Strength = stdev of 4 dimensions scaled by 5.0 (max practical stdev)
+  const dims = [process, information, decision, energy]
+  const variance = dims.reduce((s, d) => s + Math.pow(d - founderDependencyScore, 2), 0) / dims.length
+  const stdev = Math.sqrt(variance)
+  const watermarkStrength = Math.min(10, (stdev / 5.0) * 10)
+
+  // Range scores kept for storage parity with Mindset (used by saveRadar shape)
+  const rangeDecisionMaking = Math.abs(radarScores.cognitive - radarScores.intuitive)
+  const rangeBehaviour = Math.abs(radarScores.reactive - radarScores.collaborative)
+  const rangeLeadership = Math.abs(radarScores.directive - radarScores.proactive)
+  const rangeAwareness = Math.abs(radarScores.spiritual_purpose - radarScores.analytical)
+
+  return {
+    radarScores,
+    process,
+    information,
+    decision,
+    energy,
+    founderDependencyScore,
+    watermarkStrength,
+    rangeDecisionMaking,
+    rangeBehaviour,
+    rangeLeadership,
+    rangeAwareness,
+    // Store watermarkStrength in readiness_score field so computeOwnerScores can read it back
+    readinessScore: watermarkStrength,
   }
 }
