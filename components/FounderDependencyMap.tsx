@@ -1,6 +1,18 @@
 'use client'
 
-import { type OwnerScores, type OwnerDimension, founderDependencyLabel, watermarkStrengthLabel } from '@/lib/ownerIndex'
+import { type OwnerScores, type OwnerDimension } from '@/lib/ownerIndex'
+
+function fdsSubtext(score: number): string {
+  if (score >= 6.7) return 'High dependency - the business is you'
+  if (score >= 3.4) return 'Moderate dependency - room to extract'
+  return 'Highly extractable - lower means more extractable'
+}
+
+function watermarkSubtext(score: number): string {
+  if (score >= 6.7) return 'Defined watermark - higher means more distinctive'
+  if (score >= 3.4) return 'Emerging watermark - clarity building'
+  return 'Undefined watermark - hard to separate you from the business'
+}
 
 interface FounderDependencyMapProps {
   ownerScores: OwnerScores
@@ -141,7 +153,7 @@ export default function FounderDependencyMap({ ownerScores, prevOwnerScores, onW
             marginTop: '6px',
             lineHeight: '1.5',
           }}>
-            {founderDependencyLabel(founderDependencyScore)} - lower means more extractable
+            {fdsSubtext(founderDependencyScore)}
           </p>
         </div>
 
@@ -183,7 +195,7 @@ export default function FounderDependencyMap({ ownerScores, prevOwnerScores, onW
             marginTop: '6px',
             lineHeight: '1.5',
           }}>
-            {watermarkStrengthLabel(watermarkStrength)} - higher means more distinctive
+            {watermarkSubtext(watermarkStrength)}
           </p>
         </div>
       </div>
