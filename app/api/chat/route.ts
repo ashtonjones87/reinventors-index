@@ -5,6 +5,7 @@ import { buildSystemPrompt, buildPreDiagnosticPrompt } from '@/lib/prompts/assem
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
+  incrementChatUsage,
 } from '@/lib/supabase/queries'
 
 const CLAUDE_TIMEOUT_MS = 25_000
@@ -35,6 +36,12 @@ export async function POST(req: NextRequest) {
     }
 
     const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
+    const product: 'owner' | 'mindset' = isOwnerIndex ? 'owner' : 'mindset'
+
+    // Fire-and-forget usage tracking - must never block or break chat
+    incrementChatUsage(userId, product).catch(err => {
+      console.error('Failed to increment chat_usage:', err)
+    })
 
     const [latestSummary, diagnostics] = await Promise.all([
       getLatestSummary(userId),

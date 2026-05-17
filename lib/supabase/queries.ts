@@ -74,6 +74,50 @@ export async function purgeExpiredUsers(): Promise<number> {
 }
 
 // ============================================
+// CHAT USAGE QUERIES
+// One row per user per UTC day. message_count increments on each user message.
+// ============================================
+
+export async function incrementChatUsage(userId: string, product: Product = 'mindset') {
+  const supabase = getSupabaseServer()
+
+  // Compute start of today (UTC) so each user gets one row per day
+  const today = new Date()
+  today.setUTCHours(0, 0, 0, 0)
+  const todayIso = today.toISOString()
+
+  // Find today's row for this user
+  const { data: existing, error: selectError } = await supabase
+    .from('chat_usage')
+    .select('id, message_count')
+    .eq('user_id', userId)
+    .gte('window_start', todayIso)
+    .limit(1)
+    .maybeSingle()
+
+  if (selectError) throw selectError
+
+  if (existing) {
+    const { error } = await supabase
+      .from('chat_usage')
+      .update({ message_count: existing.message_count + 1 })
+      .eq('id', existing.id)
+    if (error) throw error
+  } else {
+    const { error } = await supabase
+      .from('chat_usage')
+      .insert({
+        user_id: userId,
+        message_count: 1,
+        window_start: todayIso,
+        is_authenticated_member: true,
+        product,
+      })
+    if (error) throw error
+  }
+}
+
+// ============================================
 // SESSION SUMMARY QUERIES
 // ============================================
 
