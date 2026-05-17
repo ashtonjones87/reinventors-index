@@ -11,13 +11,17 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Branch by domain (read once for both user upsert and scoring)
+    const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
+    const product = isOwnerIndex ? 'owner' : 'mindset'
+
     // Ensure user exists in Supabase (handles local dev where webhooks can't reach localhost,
     // and acts as a safety net in production for any webhook delivery gaps)
     const clerkUser = await currentUser()
     if (clerkUser) {
       const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
       const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || email
-      await upsertUser(userId, email, name)
+      await upsertUser(userId, email, name, product)
     }
 
     const body = await req.json()
@@ -40,9 +44,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Branch by domain: Owner's Index uses its own scoring methodology
-    const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
-
     // Score the responses (different formula per product)
     const {
       radarScores,
@@ -64,14 +65,15 @@ export async function POST(req: NextRequest) {
       userId,
       radarScores,
       {
-        readinessScore,
+        readinessScore: parseFloat(readinessScore.toFixed(1)),
         rangeDecisionMaking,
         rangeBehaviour,
         rangeLeadership,
         rangeAwareness,
       },
       rawResponses,
-      journey ?? null
+      journey ?? null,
+      product
     )
 
     // Return scores immediately so frontend can render radar without re-fetching

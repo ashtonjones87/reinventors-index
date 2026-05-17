@@ -325,7 +325,7 @@ export function scoreOwnerResponses(answers: number[]): OwnerDiagnosticResult {
   const dims = [process, information, decision, energy]
   const variance = dims.reduce((s, d) => s + Math.pow(d - founderDependencyScore, 2), 0) / dims.length
   const stdev = Math.sqrt(variance)
-  const watermarkStrength = Math.min(10, (stdev / 5.0) * 10)
+  const watermarkStrength = parseFloat(Math.min(10, (stdev / 5.0) * 10).toFixed(1))
 
   // Range scores kept for storage parity with Mindset (used by saveRadar shape)
   const rangeDecisionMaking = Math.abs(radarScores.cognitive - radarScores.intuitive)

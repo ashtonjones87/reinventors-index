@@ -5,11 +5,17 @@ import type { RadarScores } from '@/lib/diagnostic'
 // USER QUERIES
 // ============================================
 
-export async function upsertUser(id: string, email: string, name: string) {
+export type Product = 'owner' | 'mindset'
+
+export async function upsertUser(id: string, email: string, name: string, product: Product = 'mindset') {
   const supabase = getSupabaseServer()
+  // Only set product on insert - don't overwrite existing user's product on subsequent upserts
   const { error } = await supabase
     .from('users')
-    .upsert({ id, email, name, created_at: new Date().toISOString() })
+    .upsert(
+      { id, email, name, product, created_at: new Date().toISOString() },
+      { onConflict: 'id', ignoreDuplicates: false }
+    )
   if (error) throw error
 }
 
@@ -91,7 +97,7 @@ export async function saveSummary(userId: string, summary: {
   practical_action: string
   open_questions: string
   shift_observed: string
-}, rawTranscript: string) {
+}, rawTranscript: string, product: Product = 'mindset') {
   const supabase = getSupabaseServer()
   const { error } = await supabase
     .from('session_summaries')
@@ -104,6 +110,7 @@ export async function saveSummary(userId: string, summary: {
       open_questions: summary.open_questions,
       shift_observed: summary.shift_observed,
       raw_transcript: rawTranscript,
+      product,
     })
   if (error) throw error
 }
@@ -135,7 +142,8 @@ export async function saveRadar(
     rangeAwareness: number
   },
   rawResponses: { question_id: number; answer: number }[],
-  context?: string | null
+  context?: string | null,
+  product: Product = 'mindset'
 ) {
   const supabase = getSupabaseServer()
   const { error } = await supabase.from('diagnostics').insert({
@@ -147,6 +155,7 @@ export async function saveRadar(
     range_leadership: readinessData.rangeLeadership,
     range_awareness: readinessData.rangeAwareness,
     raw_responses: rawResponses,
+    product,
     ...(context ? { context_detected: context } : {}),
   })
   if (error) throw error
@@ -177,7 +186,8 @@ export async function saveActionPlan(
     practical_action: string
     open_questions?: string | null
     shift_observed?: string | null
-  }
+  },
+  product: Product = 'mindset'
 ): Promise<{ deletedOldest: boolean }> {
   const supabase = getSupabaseServer()
 
@@ -211,6 +221,7 @@ export async function saveActionPlan(
     practical_action: plan.practical_action,
     open_questions: plan.open_questions ?? null,
     shift_observed: plan.shift_observed ?? null,
+    product,
   })
   if (error) throw error
 

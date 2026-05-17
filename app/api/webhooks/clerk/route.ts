@@ -50,6 +50,9 @@ export async function POST(req: Request) {
       return new Response('No email found on user', { status: 400 })
     }
 
+    // Determine product from the request's host (middleware sets x-is-owner-index)
+    const product: 'owner' | 'mindset' = headerPayload.get('x-is-owner-index') === '1' ? 'owner' : 'mindset'
+
     try {
       // Check if this email has a soft-deleted account within the 30-day window.
       // If so, restore it (re-links all session/diagnostic data to the new Clerk ID).
@@ -57,8 +60,8 @@ export async function POST(req: Request) {
       if (restored) {
         console.log(`Account restored for returning user: ${email}`)
       } else {
-        await upsertUser(id, email, name)
-        console.log(`User synced to Supabase: ${email}`)
+        await upsertUser(id, email, name, product)
+        console.log(`User synced to Supabase: ${email} (product: ${product})`)
       }
     } catch (err) {
       console.error('Failed to sync user to Supabase:', err)

@@ -1,5 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
@@ -40,19 +40,21 @@ export async function GET() {
   }
 }
 
-export async function PUT() {
+export async function PUT(req: NextRequest) {
   const { userId } = await auth()
 
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
+  const product: 'owner' | 'mindset' = req.headers.get('x-is-owner-index') === '1' ? 'owner' : 'mindset'
+
   try {
     const clerkUser = await currentUser()
     if (clerkUser) {
       const email = clerkUser.emailAddresses[0]?.emailAddress ?? ''
       const name = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ')
-      await upsertUser(userId, email, name)
+      await upsertUser(userId, email, name, product)
     }
 
     return NextResponse.json({ success: true })

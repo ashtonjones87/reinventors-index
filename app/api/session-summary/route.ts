@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
+  const product: 'owner' | 'mindset' = req.headers.get('x-is-owner-index') === '1' ? 'owner' : 'mindset'
+
   try {
     const body = await req.json()
     const { messages, context_detected } = body
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
       practical_action: summaryData.practical_action,
       open_questions: summaryData.open_questions,
       shift_observed: summaryData.shift_observed,
-    }, transcript)
+    }, transcript, product)
 
     // Also persist as an action plan (auto-deletes oldest if user already has 3)
     // Use the raw action plan block from the chat rather than the AI-summarised version
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
         practical_action: rawPlanText ?? summaryData.practical_action,
         open_questions: summaryData.open_questions,
         shift_observed: summaryData.shift_observed,
-      })
+      }, product)
     } catch (planError) {
       // Non-fatal: session summary was already saved successfully
       console.error('Failed to save action plan:', planError)

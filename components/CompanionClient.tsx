@@ -644,14 +644,17 @@ export default function CompanionClient({
 
         {/* Right controls - desktop */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {readinessScore !== null && (
+          {(isOwnerIndex ? ownerScores : readinessScore !== null) && (
             <span className="phone-hide" style={{
               fontSize: '13px',
               fontWeight: '600',
               color: '#334a69',
               letterSpacing: '0.01em',
             }}>
-              Adaptive Range Score&nbsp;·&nbsp;{readinessScore}<span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
+              {isOwnerIndex
+                ? <>Founder Dependency Score&nbsp;·&nbsp;{ownerScores!.founderDependencyScore.toFixed(1)}</>
+                : <>Adaptive Range Score&nbsp;·&nbsp;{readinessScore!.toFixed(1)}</>}
+              <span style={{ color: '#9CA3AF', fontWeight: '400' }}>/10</span>
             </span>
           )}
           {radarScores && (
@@ -769,8 +772,14 @@ export default function CompanionClient({
               }}>
                 <div>
                   <p style={{ fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', color: '#9CA3AF', textTransform: 'uppercase', marginBottom: '3px' }}>
-                    Adaptive Range Score
-                    <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: '400' }}> / 10</span>
+                    {isOwnerIndex ? 'Founder Dependency Score' : 'Adaptive Range Score'}
+                    <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: '400' }}>
+                      {' '}{isOwnerIndex && ownerScores
+                        ? `${ownerScores.founderDependencyScore.toFixed(1)} / 10`
+                        : readinessScore !== null
+                          ? `${readinessScore.toFixed(1)} / 10`
+                          : '/ 10'}
+                    </span>
                   </p>
                 </div>
               </div>
