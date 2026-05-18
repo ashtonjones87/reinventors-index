@@ -223,13 +223,12 @@ export default function SignUpPage() {
         {showForm ? (
           <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <SignUp
-              forceRedirectUrl="/home"
+              forceRedirectUrl={prefill.fromIroncove ? '/home?src=ironcove' : '/home'}
               initialValues={{
                 emailAddress: prefill.email,
                 firstName: prefill.firstName,
                 lastName: prefill.lastName,
               }}
-              unsafeMetadata={prefill.fromIroncove ? { source: 'ironcove' } : {}}
             />
           </div>
         ) : (

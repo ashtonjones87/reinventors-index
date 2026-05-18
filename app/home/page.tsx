@@ -4,10 +4,11 @@ import { headers } from 'next/headers'
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
+  updateUserProduct,
 } from '@/lib/supabase/queries'
 import CompanionClient from '@/components/CompanionClient'
 
-export default async function CompanionPage() {
+export default async function CompanionPage({ searchParams }: { searchParams: Promise<{ src?: string }> }) {
   const { userId } = await auth()
 
   if (!userId) {
@@ -16,6 +17,11 @@ export default async function CompanionPage() {
 
   const headersList = await headers()
   const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
+
+  const params = await searchParams
+  if (params.src === 'ironcove') {
+    try { await updateUserProduct(userId, 'owner-ironcove') } catch {}
+  }
 
   let latestSummary = null
   let diagnostics: any[] = []

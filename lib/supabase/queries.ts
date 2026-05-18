@@ -73,6 +73,16 @@ export async function purgeExpiredUsers(): Promise<number> {
   return data?.length ?? 0
 }
 
+export async function updateUserProduct(id: string, product: Product) {
+  const supabase = getSupabaseServer()
+  const { error } = await supabase
+    .from('users')
+    .update({ product })
+    .eq('id', id)
+    .eq('product', 'owner') // only upgrade owner → owner-ironcove, never overwrite other products
+  if (error) throw error
+}
+
 // ============================================
 // CHAT USAGE QUERIES
 // One row per user per UTC day. message_count increments on each user message.
