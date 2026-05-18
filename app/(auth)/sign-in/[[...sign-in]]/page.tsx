@@ -35,6 +35,26 @@ const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
       margin: '0 auto',
       opacity: 0.5,
     }} />
+    {isOwnerIndex && (
+      <p style={{
+        fontSize: '11px',
+        color: '#9CA3AF',
+        fontFamily: 'var(--font-inter)',
+        letterSpacing: '0.04em',
+        marginTop: '10px',
+        marginBottom: 0,
+      }}>
+        Powered by{' '}
+        <a
+          href="https://ironcovepartners.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#9CA3AF', textDecoration: 'underline', textUnderlineOffset: '2px' }}
+        >
+          Iron Cove Partners
+        </a>
+      </p>
+    )}
   </div>
 )
 
