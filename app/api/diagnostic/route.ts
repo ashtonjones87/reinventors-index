@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
   try {
     // Branch by domain (read once for both user upsert and scoring)
     const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
-    const product = isOwnerIndex ? 'owner' : 'mindset'
+    const product = isOwnerIndex ? 'owner' : 'reinventor'
 
     // Ensure user exists in Supabase (handles local dev where webhooks can't reach localhost,
     // and acts as a safety net in production for any webhook delivery gaps)

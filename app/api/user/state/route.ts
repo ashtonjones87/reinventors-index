@@ -47,7 +47,7 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
   }
 
-  const product: 'owner' | 'mindset' = req.headers.get('x-is-owner-index') === '1' ? 'owner' : 'mindset'
+  const product: 'owner' | 'reinventor' = req.headers.get('x-is-owner-index') === '1' ? 'owner' : 'reinventor'
 
   try {
     const clerkUser = await currentUser()

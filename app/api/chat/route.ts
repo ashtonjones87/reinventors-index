@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
-    const product: 'owner' | 'mindset' = isOwnerIndex ? 'owner' : 'mindset'
+    const product: 'owner' | 'reinventor' = isOwnerIndex ? 'owner' : 'reinventor'
 
     // Fire-and-forget usage tracking - must never block or break chat
     incrementChatUsage(userId, product).catch(err => {
