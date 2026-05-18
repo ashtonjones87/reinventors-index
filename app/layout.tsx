@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: process.env.NEXT_PUBLIC_SITE_NAME || "The Reinventor's Mindset™ Index",
   description: 'AI coaching companion by Ashton Jones',
   icons: {
-    icon: '/icon.png',
+    icon: process.env.NEXT_PUBLIC_FAVICON || '/icon.png',
   },
 }
 
