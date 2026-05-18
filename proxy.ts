@@ -27,7 +27,14 @@ export default clerkMiddleware(async (auth, request) => {
     await auth.protect()
   }
 
-  return NextResponse.next({ request: { headers: requestHeaders } })
+  const response = NextResponse.next({ request: { headers: requestHeaders } })
+  response.cookies.set('x_is_owner', isOwnerIndex ? '1' : '0', {
+    path: '/',
+    httpOnly: false,
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 365,
+  })
+  return response
 })
 
 export const config = {

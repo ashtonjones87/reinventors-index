@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 import {
   getLatestSummary,
   getLastTwoDiagnostics,
@@ -19,7 +19,9 @@ export default async function CompanionPage({ searchParams }: { searchParams: Pr
   const isOwnerIndex = headersList.get('x-is-owner-index') === '1'
 
   const params = await searchParams
-  if (params.src === 'ironcove') {
+  const cookieStore = await cookies()
+  const isIroncoveReferral = params.src === 'ironcove' || cookieStore.get('ironcove_ref')?.value === '1'
+  if (isIroncoveReferral) {
     try { await updateUserProduct(userId, 'owner-ironcove') } catch {}
   }
 

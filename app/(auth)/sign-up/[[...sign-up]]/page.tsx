@@ -58,17 +58,20 @@ const BrandHeader = ({ isOwnerIndex }: { isOwnerIndex: boolean }) => (
   </div>
 )
 
+function readCookieBool(name: string): boolean {
+  if (typeof document === 'undefined') return false
+  return document.cookie.split(';').some(c => c.trim().startsWith(name + '=1'))
+}
+
 export default function SignUpPage() {
-  const [mounted, setMounted] = useState(false)
   const [consented, setConsented] = useState(false)
   const [showForm, setShowForm] = useState(false)
-  const [isOwnerIndex, setIsOwnerIndex] = useState(false)
+  const [isOwnerIndex, setIsOwnerIndex] = useState(() => readCookieBool('x_is_owner'))
   const [prefill, setPrefill] = useState({ firstName: '', lastName: '', email: '', fromIroncove: false })
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    setMounted(true)
     const h = window.location.hostname
     setIsOwnerIndex(h.includes('ownerindex') || h.includes('owner.reinventor'))
 
@@ -77,6 +80,10 @@ export default function SignUpPage() {
     const lastName = params.get('lastName') || ''
     const email = params.get('email') || ''
     const agreed = params.get('agreed') === 'true'
+
+    if (agreed) {
+      document.cookie = 'ironcove_ref=1; path=/; max-age=3600; SameSite=Lax'
+    }
 
     if (firstName || lastName || email) setPrefill({ firstName, lastName, email, fromIroncove: agreed })
 
@@ -93,24 +100,7 @@ export default function SignUpPage() {
     }
   }, [isLoaded, isSignedIn, router])
 
-  if (isSignedIn) return null
-
-  if (!mounted || !isLoaded) {
-    return (
-      <main style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#F5F3EE',
-        padding: '24px',
-      }}>
-        <div style={{ width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <BrandHeader isOwnerIndex={isOwnerIndex} />
-        </div>
-      </main>
-    )
-  }
+  if (isLoaded && isSignedIn) return null
 
   return (
     <main style={{
