@@ -75,12 +75,21 @@ export async function purgeExpiredUsers(): Promise<number> {
 
 export async function updateUserProduct(id: string, product: Product) {
   const supabase = getSupabaseServer()
-  const { error } = await supabase
-    .from('users')
-    .update({ product })
-    .eq('id', id)
-    .eq('product', 'owner') // only upgrade owner → owner-ironcove, never overwrite other products
-  if (error) throw error
+  // Retry up to 4 times with backoff — the Clerk webhook that creates the user row
+  // fires asynchronously and may not complete before the home page redirect lands.
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (attempt > 0) {
+      await new Promise(r => setTimeout(r, 1000 * attempt))
+    }
+    const { data, error } = await supabase
+      .from('users')
+      .update({ product })
+      .eq('id', id)
+      .eq('product', 'owner')
+      .select('id')
+    if (error) throw error
+    if (data && data.length > 0) return
+  }
 }
 
 // ============================================
