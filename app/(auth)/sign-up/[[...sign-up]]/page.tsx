@@ -60,11 +60,7 @@ export default function SignUpPage() {
 
     if (firstName || lastName || email) setPrefill({ firstName, lastName, email })
 
-    if (agreed) {
-      setConsented(true)
-      setShowForm(true)
-      sessionStorage.setItem('signup_in_progress', 'true')
-    } else if (sessionStorage.getItem('signup_in_progress') === 'true') {
+    if (sessionStorage.getItem('signup_in_progress') === 'true') {
       setShowForm(true)
       setConsented(true)
     }
