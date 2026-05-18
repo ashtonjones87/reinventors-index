@@ -43,6 +43,7 @@ export default function SignUpPage() {
   const [consented, setConsented] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [isOwnerIndex, setIsOwnerIndex] = useState(false)
+  const [prefill, setPrefill] = useState({ firstName: '', lastName: '', email: '' })
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
@@ -50,8 +51,20 @@ export default function SignUpPage() {
     setMounted(true)
     const h = window.location.hostname
     setIsOwnerIndex(h.includes('ownerindex') || h.includes('owner.reinventor'))
-    // Restore showForm from sessionStorage so OTP remounts don't flash the consent box
-    if (sessionStorage.getItem('signup_in_progress') === 'true') {
+
+    const params = new URLSearchParams(window.location.search)
+    const firstName = params.get('firstName') || ''
+    const lastName = params.get('lastName') || ''
+    const email = params.get('email') || ''
+    const agreed = params.get('agreed') === 'true'
+
+    if (firstName || lastName || email) setPrefill({ firstName, lastName, email })
+
+    if (agreed) {
+      setConsented(true)
+      setShowForm(true)
+      sessionStorage.setItem('signup_in_progress', 'true')
+    } else if (sessionStorage.getItem('signup_in_progress') === 'true') {
       setShowForm(true)
       setConsented(true)
     }
@@ -193,7 +206,14 @@ export default function SignUpPage() {
         {/* Clerk form - only rendered after consent + button click */}
         {showForm ? (
           <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <SignUp forceRedirectUrl="/home" />
+            <SignUp
+              forceRedirectUrl="/home"
+              initialValues={{
+                emailAddress: prefill.email,
+                firstName: prefill.firstName,
+                lastName: prefill.lastName,
+              }}
+            />
           </div>
         ) : (
           <button
