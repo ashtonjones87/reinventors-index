@@ -50,8 +50,11 @@ export async function POST(req: Request) {
       return new Response('No email found on user', { status: 400 })
     }
 
-    // Determine product from the request's host (middleware sets x-is-owner-index)
-    const product: 'owner' | 'mindset' = headerPayload.get('x-is-owner-index') === '1' ? 'owner' : 'mindset'
+    // Determine product — ironcove referral takes precedence over domain check
+    const source = (evt.data.unsafe_metadata as Record<string, unknown> | undefined)?.source
+    const isOwner = headerPayload.get('x-is-owner-index') === '1'
+    const product: 'reinventor' | 'owner' | 'owner-ironcove' =
+      source === 'ironcove' ? 'owner-ironcove' : isOwner ? 'owner' : 'reinventor'
 
     try {
       // Check if this email has a soft-deleted account within the 30-day window.

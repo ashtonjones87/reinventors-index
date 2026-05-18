@@ -63,7 +63,7 @@ export default function SignUpPage() {
   const [consented, setConsented] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [isOwnerIndex, setIsOwnerIndex] = useState(false)
-  const [prefill, setPrefill] = useState({ firstName: '', lastName: '', email: '' })
+  const [prefill, setPrefill] = useState({ firstName: '', lastName: '', email: '', fromIroncove: false })
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
@@ -78,7 +78,7 @@ export default function SignUpPage() {
     const email = params.get('email') || ''
     const agreed = params.get('agreed') === 'true'
 
-    if (firstName || lastName || email) setPrefill({ firstName, lastName, email })
+    if (firstName || lastName || email) setPrefill({ firstName, lastName, email, fromIroncove: agreed })
 
     if (sessionStorage.getItem('signup_in_progress') === 'true') {
       setShowForm(true)
@@ -229,6 +229,7 @@ export default function SignUpPage() {
                 firstName: prefill.firstName,
                 lastName: prefill.lastName,
               }}
+              unsafeMetadata={prefill.fromIroncove ? { source: 'ironcove' } : {}}
             />
           </div>
         ) : (

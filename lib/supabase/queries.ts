@@ -5,9 +5,9 @@ import type { RadarScores } from '@/lib/diagnostic'
 // USER QUERIES
 // ============================================
 
-export type Product = 'owner' | 'mindset'
+export type Product = 'reinventor' | 'owner' | 'owner-ironcove'
 
-export async function upsertUser(id: string, email: string, name: string, product: Product = 'mindset') {
+export async function upsertUser(id: string, email: string, name: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
   // Only set product on insert - don't overwrite existing user's product on subsequent upserts
   const { error } = await supabase
@@ -78,7 +78,7 @@ export async function purgeExpiredUsers(): Promise<number> {
 // One row per user per UTC day. message_count increments on each user message.
 // ============================================
 
-export async function incrementChatUsage(userId: string, product: Product = 'mindset') {
+export async function incrementChatUsage(userId: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
 
   // Compute start of today (UTC) so each user gets one row per day
@@ -141,7 +141,7 @@ export async function saveSummary(userId: string, summary: {
   practical_action: string
   open_questions: string
   shift_observed: string
-}, rawTranscript: string, product: Product = 'mindset') {
+}, rawTranscript: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
   const { error } = await supabase
     .from('session_summaries')
@@ -187,7 +187,7 @@ export async function saveRadar(
   },
   rawResponses: { question_id: number; answer: number }[],
   context?: string | null,
-  product: Product = 'mindset'
+  product: Product = 'reinventor'
 ) {
   const supabase = getSupabaseServer()
   const { error } = await supabase.from('diagnostics').insert({
@@ -231,7 +231,7 @@ export async function saveActionPlan(
     open_questions?: string | null
     shift_observed?: string | null
   },
-  product: Product = 'mindset'
+  product: Product = 'reinventor'
 ): Promise<{ deletedOldest: boolean }> {
   const supabase = getSupabaseServer()
 
