@@ -7,16 +7,36 @@ import type { RadarScores } from '@/lib/diagnostic'
 
 export type Product = 'reinventor' | 'owner' | 'owner-ironcove'
 
+// True when an insert failed specifically because the `product` column is
+// absent or rejects the value (e.g. migration not yet run, CHECK constraint).
+// Lets callers retry the write without the product tag instead of losing data.
+function isMissingProductColumn(error: { message?: string; code?: string }): boolean {
+  const msg = (error?.message ?? '').toLowerCase()
+  return (
+    msg.includes('product') &&
+    (msg.includes('column') ||
+      msg.includes('schema cache') ||
+      msg.includes('does not exist') ||
+      msg.includes('violates check constraint'))
+  )
+}
+
 export async function upsertUser(id: string, email: string, name: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
-  // Only set product on insert - don't overwrite existing user's product on subsequent upserts
+  const baseRow = { id, email, name, created_at: new Date().toISOString() }
   const { error } = await supabase
     .from('users')
-    .upsert(
-      { id, email, name, product, created_at: new Date().toISOString() },
-      { onConflict: 'id', ignoreDuplicates: false }
-    )
-  if (error) throw error
+    .upsert({ ...baseRow, product }, { onConflict: 'id', ignoreDuplicates: false })
+  if (error) {
+    if (isMissingProductColumn(error)) {
+      const { error: retryError } = await supabase
+        .from('users')
+        .upsert(baseRow, { onConflict: 'id', ignoreDuplicates: false })
+      if (retryError) throw retryError
+    } else {
+      throw error
+    }
+  }
 }
 
 // Marks a user for deletion. Data is retained for 30 days before permanent purge.
@@ -123,16 +143,21 @@ export async function incrementChatUsage(userId: string, product: Product = 'rei
       .eq('id', existing.id)
     if (error) throw error
   } else {
-    const { error } = await supabase
-      .from('chat_usage')
-      .insert({
-        user_id: userId,
-        message_count: 1,
-        window_start: todayIso,
-        is_authenticated_member: true,
-        product,
-      })
-    if (error) throw error
+    const baseRow = {
+      user_id: userId,
+      message_count: 1,
+      window_start: todayIso,
+      is_authenticated_member: true,
+    }
+    const { error } = await supabase.from('chat_usage').insert({ ...baseRow, product })
+    if (error) {
+      if (isMissingProductColumn(error)) {
+        const { error: retryError } = await supabase.from('chat_usage').insert(baseRow)
+        if (retryError) throw retryError
+      } else {
+        throw error
+      }
+    }
   }
 }
 
@@ -162,20 +187,25 @@ export async function saveSummary(userId: string, summary: {
   shift_observed: string
 }, rawTranscript: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
-  const { error } = await supabase
-    .from('session_summaries')
-    .insert({
-      user_id: userId,
-      context_detected: summary.context_detected ?? null,
-      framework_explored: summary.framework_explored,
-      core_tension: summary.core_tension,
-      practical_action: summary.practical_action,
-      open_questions: summary.open_questions,
-      shift_observed: summary.shift_observed,
-      raw_transcript: rawTranscript,
-      product,
-    })
-  if (error) throw error
+  const baseRow = {
+    user_id: userId,
+    context_detected: summary.context_detected ?? null,
+    framework_explored: summary.framework_explored,
+    core_tension: summary.core_tension,
+    practical_action: summary.practical_action,
+    open_questions: summary.open_questions,
+    shift_observed: summary.shift_observed,
+    raw_transcript: rawTranscript,
+  }
+  const { error } = await supabase.from('session_summaries').insert({ ...baseRow, product })
+  if (error) {
+    if (isMissingProductColumn(error)) {
+      const { error: retryError } = await supabase.from('session_summaries').insert(baseRow)
+      if (retryError) throw retryError
+    } else {
+      throw error
+    }
+  }
 }
 
 // ============================================
@@ -209,7 +239,7 @@ export async function saveRadar(
   product: Product = 'reinventor'
 ) {
   const supabase = getSupabaseServer()
-  const { error } = await supabase.from('diagnostics').insert({
+  const baseRow = {
     user_id: userId,
     ...scores,
     readiness_score: readinessData.readinessScore,
@@ -218,10 +248,17 @@ export async function saveRadar(
     range_leadership: readinessData.rangeLeadership,
     range_awareness: readinessData.rangeAwareness,
     raw_responses: rawResponses,
-    product,
     ...(context ? { context_detected: context } : {}),
-  })
-  if (error) throw error
+  }
+  const { error } = await supabase.from('diagnostics').insert({ ...baseRow, product })
+  if (error) {
+    if (isMissingProductColumn(error)) {
+      const { error: retryError } = await supabase.from('diagnostics').insert(baseRow)
+      if (retryError) throw retryError
+    } else {
+      throw error
+    }
+  }
 }
 
 // ============================================
@@ -276,7 +313,7 @@ export async function saveActionPlan(
     }
   }
 
-  const { error } = await supabase.from('action_plans').insert({
+  const baseRow = {
     user_id: userId,
     context_detected: plan.context_detected ?? null,
     framework_explored: plan.framework_explored ?? null,
@@ -284,9 +321,20 @@ export async function saveActionPlan(
     practical_action: plan.practical_action,
     open_questions: plan.open_questions ?? null,
     shift_observed: plan.shift_observed ?? null,
-    product,
-  })
-  if (error) throw error
+  }
+
+  const { error } = await supabase.from('action_plans').insert({ ...baseRow, product })
+
+  // If the product column doesn't exist (or rejects the value), still save the
+  // action plan without the product tag rather than losing it entirely.
+  if (error) {
+    if (isMissingProductColumn(error)) {
+      const { error: retryError } = await supabase.from('action_plans').insert(baseRow)
+      if (retryError) throw retryError
+    } else {
+      throw error
+    }
+  }
 
   return { deletedOldest }
 }
