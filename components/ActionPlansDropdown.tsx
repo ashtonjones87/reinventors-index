@@ -6,7 +6,13 @@ import { type ActionPlan, formatPlanDate, downloadActionPlanPDF } from '@/lib/ac
 
 // Renders a line that may contain inline **bold** segments.
 // Also strips any orphaned ** left by markdown extraction edge-cases.
-function renderBoldLine(line: string): React.ReactNode {
+// Normalise em/en dashes to plain hyphen - the AI sometimes emits them
+function nd(s: string | null | undefined): string {
+  return (s ?? '').replace(/[—–―]/g, '-')
+}
+
+function renderBoldLine(rawLine: string): React.ReactNode {
+  const line = nd(rawLine)
   const parts = line.split(/(\*\*[^*]+\*\*)/)
   if (parts.length === 1) return line.replace(/\*\*/g, '')
   return (
@@ -391,7 +397,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
                     Core Tension
                   </p>
                   <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.7', fontFamily: 'var(--font-inter)' }}>
-                    {selectedPlan.core_tension}
+                    {nd(selectedPlan.core_tension)}
                   </p>
                 </div>
               )}
@@ -405,7 +411,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
                 }}>
                   {(() => {
                     const elements: React.ReactNode[] = []
-                    selectedPlan.practical_action.split('\n').forEach((line, i) => {
+                    nd(selectedPlan.practical_action).split('\n').forEach((line, i) => {
                       if (line.trim() === '') {
                         elements.push(<div key={i} style={{ height: '10px' }} />)
                         return
@@ -456,7 +462,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
                     Open Questions
                   </p>
                   <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.7', fontFamily: 'var(--font-inter)' }}>
-                    {selectedPlan.open_questions}
+                    {nd(selectedPlan.open_questions)}
                   </p>
                 </div>
               )}
@@ -467,7 +473,7 @@ export default function ActionPlansDropdown({ variant }: { variant?: 'menu-row' 
                     Shift Observed
                   </p>
                   <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.7', fontFamily: 'var(--font-inter)' }}>
-                    {selectedPlan.shift_observed}
+                    {nd(selectedPlan.shift_observed)}
                   </p>
                 </div>
               )}

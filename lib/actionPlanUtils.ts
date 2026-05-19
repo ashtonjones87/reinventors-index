@@ -17,9 +17,16 @@ export function formatPlanDate(iso: string): string {
   })
 }
 
+// Replace em dash, en dash, and horizontal bar with a plain hyphen.
+// The AI sometimes emits these despite prompt instructions, so we normalise
+// at render time to guarantee none ever appear in the PDF.
+function normalizeDashes(s: string): string {
+  return s.replace(/[—–―]/g, '-')
+}
+
 function escapeHTML(s: string | null | undefined): string {
   if (!s) return ''
-  return s
+  return normalizeDashes(s)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -34,7 +41,7 @@ function capitalize(s: string): string {
 // Converts the raw action plan text (markdown-ish) to clean HTML for the PDF.
 // Handles: **bold** inline, blank lines → paragraph breaks, plain lines → <p>
 function actionPlanToHTML(text: string): string {
-  const lines = text.split('\n')
+  const lines = normalizeDashes(text).split('\n')
   let html = ''
   for (const line of lines) {
     if (line.trim() === '') {
@@ -68,11 +75,18 @@ function actionPlanToHTML(text: string): string {
 export function downloadActionPlanPDF(plan: ActionPlan): void {
   const date = formatPlanDate(plan.created_at)
 
+  // Domain-aware branding for the footer
+  const host = typeof window !== 'undefined' ? window.location.hostname : ''
+  const isOwnerIndex = host.includes('ownerindex') || host.includes('owner.reinventor')
+  const footerBrand = isOwnerIndex
+    ? 'The Owner’s Index · ownerindex.ai'
+    : 'The Reinventor’s Mindset™ · reinventor.ai'
+
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>${escapeHTML(plan.framework_explored) || 'Action Plan'} \u2014 ${date}</title>
+  <title>${escapeHTML(plan.framework_explored) || 'Action Plan'} \u00b7 ${date}</title>
   <style>
     body {
       font-family: Georgia, 'Times New Roman', serif;
@@ -147,7 +161,7 @@ export function downloadActionPlanPDF(plan: ActionPlan): void {
   </div>
   ${plan.open_questions ? `<div class="section"><p class="label">Open Questions</p><p class="content">${escapeHTML(plan.open_questions)}</p></div>` : ''}
   ${plan.shift_observed ? `<div class="section"><p class="label">Shift Observed</p><p class="content">${escapeHTML(plan.shift_observed)}</p></div>` : ''}
-  <div class="footer">The Reinventor\u2019s Mindset\u2122 \u00b7 reinventor.ai</div>
+  <div class="footer">${footerBrand}</div>
   <script>window.onload = function () { window.print(); };<\/script>
 </body>
 </html>`

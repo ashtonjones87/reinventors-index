@@ -1,6 +1,7 @@
 ﻿import { BASE_PROMPT } from './base'
 import { UNIFIED_OVERLAY } from './overlays/unified'
 import { OWNER_OPERATOR_OVERLAY } from './overlays/owner-operator'
+import { computeOwnerScores, type RadarScores as OwnerRadarScores } from '@/lib/ownerIndex'
 
 interface RadarScores {
   intuitive: number
@@ -88,19 +89,24 @@ Reference these when recommending frameworks. The strongest poles show where the
 `
 }
 
+// Single source of truth - delegates to the same scorer the Founder Dependency
+// Map display uses, so the chat AI and the on-screen map can never diverge.
 function computeOwnerDims(scores: RadarScores) {
-  const process     = Math.min(10, Math.max(0, 10 - ((scores.cognitive as number) + (scores.intuitive as number))))
-  const information = Math.min(10, Math.max(0, 10 - ((scores.reactive as number) + (scores.collaborative as number))))
-  const decision    = Math.min(10, Math.max(0, 10 - ((scores.directive as number) + (scores.proactive as number))))
-  const energy      = Math.min(10, Math.max(0, 10 - ((scores.spiritual_purpose as number) + (scores.analytical as number))))
-  const taste       = scores.readiness_score ?? 5
-  const fds         = parseFloat(((process + information + decision + energy) / 4).toFixed(1))
-  return { process, information, decision, energy, taste, fds }
+  const s = computeOwnerScores(scores as unknown as OwnerRadarScores)
+  return {
+    process: s.process,
+    information: s.information,
+    decision: s.decision,
+    energy: s.energy,
+    taste: s.watermarkStrength,
+    fds: s.founderDependencyScore,
+  }
 }
 
-function depLabel(s: number) { return s >= 7 ? 'High Dependency' : s >= 4 ? 'Moderate Dependency' : 'Low Dependency' }
-function wsLabel(s: number)  { return s >= 7 ? 'Strong Watermark' : s >= 4 ? 'Defined Watermark' : 'Emerging Watermark' }
-function fdsLabel(s: number) { return s >= 7 ? 'High dependency - heavily founder-reliant' : s >= 4 ? 'Moderate dependency' : 'Highly extractable - business can run without you' }
+// Band labels matched to lib/ownerIndex.ts thresholds (Low 0-3.3, Moderate 3.4-6.6, High 6.7-10)
+function depLabel(s: number) { return s >= 6.7 ? 'High Dependency' : s >= 3.4 ? 'Moderate Dependency' : 'Low Dependency' }
+function wsLabel(s: number)  { return s >= 6.7 ? 'Defined Watermark' : s >= 3.4 ? 'Emerging Watermark' : 'Undefined Watermark' }
+function fdsLabel(s: number) { return s >= 6.7 ? 'High dependency - heavily founder-reliant' : s >= 3.4 ? 'Moderate dependency' : 'Highly extractable - business can run without you' }
 
 function formatOwnerIndexContext(scores: RadarScores): string {
   const { process, information, decision, energy, taste, fds } = computeOwnerDims(scores)
