@@ -117,6 +117,25 @@ export async function updateUserProduct(id: string, product: Product) {
 // One row per user per UTC day. message_count increments on each user message.
 // ============================================
 
+// Returns how many messages the user has sent today (UTC). 0 if no row yet.
+export async function getTodayChatCount(userId: string): Promise<number> {
+  const supabase = getSupabaseServer()
+  const today = new Date()
+  today.setUTCHours(0, 0, 0, 0)
+  const todayIso = today.toISOString()
+
+  const { data, error } = await supabase
+    .from('chat_usage')
+    .select('message_count')
+    .eq('user_id', userId)
+    .gte('window_start', todayIso)
+    .limit(1)
+    .maybeSingle()
+
+  if (error) throw error
+  return data?.message_count ?? 0
+}
+
 export async function incrementChatUsage(userId: string, product: Product = 'reinventor') {
   const supabase = getSupabaseServer()
 

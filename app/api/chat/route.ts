@@ -6,9 +6,17 @@ import {
   getLatestSummary,
   getLastTwoDiagnostics,
   incrementChatUsage,
+  getTodayChatCount,
 } from '@/lib/supabase/queries'
 
 const CLAUDE_TIMEOUT_MS = 25_000
+
+// Per-user daily message cap (rate limiting). Configurable via env, default 200.
+const DAILY_MESSAGE_LIMIT = Number(process.env.CHAT_DAILY_LIMIT ?? 200)
+
+// Hard ceilings on request payload to prevent oversized/abusive requests
+const MAX_MESSAGES = 200
+const MAX_TOTAL_CHARS = 100_000
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -35,8 +43,31 @@ export async function POST(req: NextRequest) {
       return new Response('Malformed messages', { status: 400 })
     }
 
+    // Payload-size guard: reject oversized requests outright
+    if (messages.length > MAX_MESSAGES) {
+      return new Response('Too many messages', { status: 413 })
+    }
+    const totalChars = messages.reduce((n: number, m: any) => n + m.content.length, 0)
+    if (totalChars > MAX_TOTAL_CHARS) {
+      return new Response('Payload too large', { status: 413 })
+    }
+
     const isOwnerIndex = req.headers.get('x-is-owner-index') === '1'
     const product: 'owner' | 'reinventor' = isOwnerIndex ? 'owner' : 'reinventor'
+
+    // Rate limit: enforce a per-user daily message cap before doing any expensive work.
+    // Fail-open if the usage lookup errors, so a DB hiccup never blocks legitimate chat.
+    try {
+      const usedToday = await getTodayChatCount(userId)
+      if (usedToday >= DAILY_MESSAGE_LIMIT) {
+        return new Response(
+          JSON.stringify({ error: 'Daily message limit reached. Please come back tomorrow.' }),
+          { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '3600' } }
+        )
+      }
+    } catch (err) {
+      console.error('Rate-limit check failed (failing open):', err)
+    }
 
     // Fire-and-forget usage tracking - must never block or break chat
     incrementChatUsage(userId, product).catch(err => {
