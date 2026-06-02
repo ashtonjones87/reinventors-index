@@ -15,15 +15,26 @@ function isOwnerIndexHost(host: string): boolean {
   return host.includes('ownerindex.ai') || host.includes('ownerindex.localhost') || host.includes('owner.reinventor.ai')
 }
 
+function isRetirementHost(host: string): boolean {
+  return host.includes('retirementindex.ai') || host.includes('retirement.reinventor.ai')
+}
+
 export default clerkMiddleware(async (auth, request) => {
   const host = request.headers.get('host') ?? ''
 
   const isOwnerIndex = isOwnerIndexHost(host)
+  const isRetirement = isRetirementHost(host)
 
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set('x-is-owner-index', isOwnerIndex ? '1' : '0')
+  requestHeaders.set('x-is-retirement', isRetirement ? '1' : '0')
 
-  if (!isPublicRoute(request)) {
+  // Retirement domain is a marketing landing page only - root is public,
+  // no auth required. CTAs link out to reinventor.ai.
+  const path = request.nextUrl.pathname
+  const isRetirementPublicPath = isRetirement && (path === '/' || path.startsWith('/_next') || path.startsWith('/api/ping'))
+
+  if (!isPublicRoute(request) && !isRetirementPublicPath) {
     await auth.protect()
   }
 
