@@ -44,7 +44,7 @@ export default function RetirementLanding() {
           letterSpacing: '0.2em',
           color: 'rgba(255,255,255,0.85)',
           textTransform: 'uppercase',
-          marginBottom: '18px',
+          marginBottom: '28px',
           fontFamily: 'var(--font-inter)',
         }}>
           The Reinventor&apos;s Mindset&trade;
@@ -56,9 +56,9 @@ export default function RetirementLanding() {
           fontSize: 'clamp(36px, 4.2vw, 62px)',
           fontWeight: '400',
           color: '#ffffff',
-          lineHeight: 1.12,
+          lineHeight: 1.3,
           letterSpacing: '-0.5px',
-          marginBottom: '24px',
+          marginBottom: '48px',
           whiteSpace: 'nowrap',
         }}>
           You&apos;ve been funding your retirement.<br />
