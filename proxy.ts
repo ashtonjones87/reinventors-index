@@ -16,7 +16,9 @@ function isOwnerIndexHost(host: string): boolean {
 }
 
 function isRetirementHost(host: string): boolean {
-  return host.includes('retirementindex.ai') || host.includes('retirement.reinventor.ai')
+  return host.includes('retirementindex.ai')
+    || host.includes('retirement.reinventor.ai')
+    || host.includes('retirement.localhost')
 }
 
 export default clerkMiddleware(async (auth, request) => {
