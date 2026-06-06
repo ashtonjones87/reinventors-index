@@ -45,3 +45,6 @@ next-env.d.ts
 
 # claude conversation history
 .claude/
+
+# Word/Office temp lock files (created when a .docx is open)
+~$*
