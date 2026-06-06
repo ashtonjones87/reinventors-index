@@ -85,7 +85,7 @@ export default function RetirementLanding() {
           flexWrap: 'wrap',
         }}>
           <a
-            href="https://reinventor.ai/sign-up"
+            href="https://reinventor.ai/sign-up?ref=retirement"
             style={{
               display: 'inline-block',
               padding: '14px 28px',

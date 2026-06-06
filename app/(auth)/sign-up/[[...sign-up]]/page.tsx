@@ -68,6 +68,7 @@ export default function SignUpPage() {
   const [showForm, setShowForm] = useState(false)
   const [isOwnerIndex, setIsOwnerIndex] = useState(() => readCookieBool('x_is_owner'))
   const [prefill, setPrefill] = useState({ firstName: '', lastName: '', email: '', fromIroncove: false })
+  const [fromRetirement, setFromRetirement] = useState(false)
   const { isSignedIn, isLoaded } = useAuth()
   const router = useRouter()
 
@@ -80,9 +81,18 @@ export default function SignUpPage() {
     const lastName = params.get('lastName') || ''
     const email = params.get('email') || ''
     const agreed = params.get('agreed') === 'true'
+    const ref = params.get('ref')
 
     if (agreed) {
       document.cookie = 'ironcove_ref=1; path=/; max-age=3600; SameSite=Lax'
+    }
+
+    // Retirement Index referral - persists across the Clerk OTP step via cookie
+    if (ref === 'retirement') {
+      document.cookie = 'retirement_ref=1; path=/; max-age=3600; SameSite=Lax'
+      setFromRetirement(true)
+    } else if (typeof document !== 'undefined' && document.cookie.includes('retirement_ref=1')) {
+      setFromRetirement(true)
     }
 
     if (firstName || lastName || email) setPrefill({ firstName, lastName, email, fromIroncove: agreed })
@@ -213,12 +223,25 @@ export default function SignUpPage() {
         {showForm ? (
           <div className="anim-fade" style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
             <SignUp
-              forceRedirectUrl={prefill.fromIroncove ? '/home?src=ironcove' : '/home'}
+              forceRedirectUrl={
+                prefill.fromIroncove
+                  ? '/home?src=ironcove'
+                  : fromRetirement
+                  ? '/home?src=retirement'
+                  : '/home'
+              }
               initialValues={{
                 emailAddress: prefill.email,
                 firstName: prefill.firstName,
                 lastName: prefill.lastName,
               }}
+              unsafeMetadata={
+                prefill.fromIroncove
+                  ? { source: 'ironcove' }
+                  : fromRetirement
+                  ? { source: 'retirement' }
+                  : undefined
+              }
             />
           </div>
         ) : (

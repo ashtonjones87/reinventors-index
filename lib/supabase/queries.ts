@@ -5,7 +5,7 @@ import type { RadarScores } from '@/lib/diagnostic'
 // USER QUERIES
 // ============================================
 
-export type Product = 'reinventor' | 'owner' | 'owner-ironcove'
+export type Product = 'reinventor' | 'owner' | 'owner-ironcove' | 'reinventor-retirement'
 
 // True when an insert failed specifically because the `product` column is
 // absent or rejects the value (e.g. migration not yet run, CHECK constraint).
