@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ const sections = [
         <ul>
           <li>Your name and email address (at sign-up)</li>
           <li>Your responses to the 16-question diagnostic and computed mindset scores</li>
-          <li>Full chat session transcripts - the complete word-for-word conversation from every session</li>
+          <li>Full chat session transcripts — the complete word-for-word conversation from every session</li>
           <li>Session summaries including framework explored, core tension, practical action and shift observed</li>
           <li>Usage data such as message count and session timestamps</li>
         </ul>
@@ -44,15 +44,9 @@ const sections = [
     title: 'Why We Collect It',
     content: (
       <>
-        <p style={{ marginBottom: '14px' }}>We use your data for two purposes:</p>
-        <p style={{ marginBottom: '10px' }}>
-          <strong style={{ color: '#334a69' }}>Coaching.</strong> Your diagnostic results, conversation history and session summaries enable the Index to deliver personalised coaching and build on previous sessions.
-        </p>
-        <p style={{ marginBottom: '14px' }}>
-          <strong style={{ color: '#334a69' }}>Research.</strong> Anonymised, aggregate insights derived from usage patterns and conversations are used for academic research, including peer-reviewed publications developed in collaboration with the University of Sydney Business School. All research data is fully anonymised - no information in any research output can be linked to you personally.
-        </p>
+        <p style={{ marginBottom: '14px' }}>We use your data for one purpose:</p>
         <p>
-          Use of the Index constitutes consent to both purposes. If you do not wish your anonymised data to be used for research, please do not create an account.
+          <strong style={{ color: '#334a69' }}>Coaching.</strong> Your diagnostic results, conversation history and session summaries enable the Index to deliver personalised coaching and build on previous sessions.
         </p>
       </>
     ),
@@ -61,9 +55,14 @@ const sections = [
     number: '4',
     title: 'Where Your Data Is Stored',
     content: (
-      <p>
-        All personal data is stored in Supabase (PostgreSQL) hosted in Sydney, Australia (ap-southeast-2 region). Your data does not leave Australia for storage purposes.
-      </p>
+      <>
+        <p style={{ marginBottom: '14px' }}>
+          All personal data is stored in Supabase (PostgreSQL) hosted in Sydney, Australia (ap-southeast-2 region). Your data does not leave Australia for storage purposes.
+        </p>
+        <p>
+          <strong style={{ color: '#334a69' }}>Cross-border processing:</strong> when you have a conversation with the Index, your message content is sent to Anthropic&apos;s Claude API for processing. Anthropic operates in the United States. Your conversation content is processed there in real time but is not stored by Anthropic, and Anthropic does not use your data for model training.
+        </p>
+      </>
     ),
   },
   {
@@ -72,17 +71,23 @@ const sections = [
     content: (
       <>
         <p style={{ marginBottom: '14px' }}>
-          We share data only with the following third-party processors, each of which has a signed Data Processing Agreement in place:
+          We share data only with the following third-party sub-processors:
         </p>
         <ul>
           <li>
-            <strong style={{ color: '#334a69' }}>Anthropic</strong> - processes your conversation data via the Claude API to power the Index&apos;s coaching responses. Anthropic does not use your data for model training.
+            <strong style={{ color: '#334a69' }}>Anthropic</strong> — processes your conversation content via the Claude API (United States) to generate coaching responses. Anthropic does not store your data and does not use it for model training.
           </li>
           <li>
-            <strong style={{ color: '#334a69' }}>Clerk</strong> - processes your authentication data (name, email and session tokens) to manage sign-up and login.
+            <strong style={{ color: '#334a69' }}>Supabase</strong> — hosts the database where your data is stored (Sydney, Australia).
           </li>
           <li>
-            <strong style={{ color: '#334a69' }}>Supabase</strong> - hosts the database where your data is stored.
+            <strong style={{ color: '#334a69' }}>Clerk</strong> — processes your authentication data (name, email and session tokens) to manage sign-up and login.
+          </li>
+          <li>
+            <strong style={{ color: '#334a69' }}>Vercel</strong> — hosts and serves the Index application.
+          </li>
+          <li>
+            <strong style={{ color: '#334a69' }}>Cloudflare</strong> — provides DNS and network services for reinventor.ai.
           </li>
         </ul>
         <p style={{ marginTop: '14px' }}>
@@ -109,20 +114,8 @@ const sections = [
             ashton@ashtonjones.com.au
           </a>. We will respond within 30 days.
         </p>
-        <p style={{ marginBottom: '10px' }}>
+        <p>
           If you are located in the European Union, you also have the right to lodge a complaint with your local data protection authority.
-        </p>
-        <p style={{
-          backgroundColor: '#F5F3EE',
-          border: '1px solid #E2DDD6',
-          borderRadius: '10px',
-          padding: '14px 18px',
-          fontSize: '13px',
-          color: '#6B7280',
-          lineHeight: '1.7',
-          marginTop: '14px',
-        }}>
-          <strong style={{ color: '#334a69' }}>Note:</strong> withdrawing consent or requesting deletion will result in the removal of your account and all associated personal data. Anonymised research data that has already been derived from your sessions and cannot be linked to you will be retained.
         </p>
       </>
     ),
@@ -135,11 +128,8 @@ const sections = [
         <p style={{ marginBottom: '10px' }}>
           <strong style={{ color: '#334a69' }}>Active accounts:</strong> your data is retained for the duration of your active account.
         </p>
-        <p style={{ marginBottom: '10px' }}>
-          <strong style={{ color: '#334a69' }}>After deletion:</strong> when your account is deleted, all personal data including your name, email, diagnostic responses, chat transcripts and session summaries is permanently deleted within 30 days.
-        </p>
         <p>
-          <strong style={{ color: '#334a69' }}>Anonymised research data:</strong> aggregate insights that contain no personally identifiable information may be retained indefinitely.
+          <strong style={{ color: '#334a69' }}>After deletion:</strong> when your account is deleted, all personal data including your name, email, diagnostic responses, chat transcripts and session summaries is permanently deleted within 30 days.
         </p>
       </>
     ),
@@ -151,24 +141,11 @@ const sections = [
       <>
         <p style={{ marginBottom: '14px' }}>By creating an account, you consent to:</p>
         <ul>
-          <li>The collection and use of your data as described in this policy</li>
+          <li>The collection and use of your data for coaching as described in this policy</li>
           <li>The storage of your full session transcripts for coaching continuity</li>
-          <li>The use of your anonymised data for academic research and peer-reviewed publication</li>
+          <li>The processing of your conversation content by Anthropic in the United States as described in section 04</li>
         </ul>
-        <p style={{
-          backgroundColor: '#F5F3EE',
-          border: '1px solid #E2DDD6',
-          borderRadius: '10px',
-          padding: '14px 18px',
-          fontSize: '13px',
-          color: '#6B7280',
-          lineHeight: '1.7',
-          marginTop: '14px',
-          marginBottom: '14px',
-        }}>
-          Consent for all three purposes is required to use the Index. These are not separable - the research purpose is a core part of the project.
-        </p>
-        <p>
+        <p style={{ marginTop: '14px' }}>
           You may withdraw your consent at any time by contacting us at{' '}
           <a href="mailto:ashton@ashtonjones.com.au" style={{ color: '#334a69', textDecoration: 'underline' }}>
             ashton@ashtonjones.com.au
@@ -184,9 +161,9 @@ const sections = [
       <>
         <p style={{ marginBottom: '14px' }}>We protect your data through:</p>
         <ul>
-          <li>Row Level Security on all database tables - you can only access your own data</li>
+          <li>Row Level Security on all database tables — you can only access your own data</li>
           <li>All API keys stored server-side and never exposed to your browser</li>
-          <li>JWT verification on every API request - unauthenticated requests are rejected</li>
+          <li>JWT verification on every API request — unauthenticated requests are rejected</li>
           <li>Invite-only access controlled by the Index administrator</li>
         </ul>
       </>
@@ -194,6 +171,25 @@ const sections = [
   },
   {
     number: '10',
+    title: 'Cookies',
+    content: (
+      <>
+        <p style={{ marginBottom: '14px' }}>
+          The Index uses cookies solely for authentication. Specifically:
+        </p>
+        <ul>
+          <li>
+            <strong style={{ color: '#334a69' }}>Clerk session cookies</strong> — set when you sign in and used to keep you authenticated across page loads. These are strictly necessary for the Index to function. They expire when your session ends or after a fixed period set by Clerk.
+          </li>
+        </ul>
+        <p style={{ marginTop: '14px' }}>
+          We do not use tracking cookies, advertising cookies or any third-party analytics cookies.
+        </p>
+      </>
+    ),
+  },
+  {
+    number: '11',
     title: 'Data Breach',
     content: (
       <p>
@@ -202,7 +198,7 @@ const sections = [
     ),
   },
   {
-    number: '11',
+    number: '12',
     title: 'Changes to This Policy',
     content: (
       <p>
@@ -211,7 +207,7 @@ const sections = [
     ),
   },
   {
-    number: '12',
+    number: '13',
     title: 'Contact',
     content: (
       <>
@@ -295,13 +291,13 @@ export default function PrivacyPage() {
             marginBottom: '16px',
           }} />
           <p style={{ fontSize: '13px', color: '#9CA3AF', fontFamily: 'var(--font-inter)' }}>
-            Last updated: 6 April 2026
+            Last updated: 18 July 2026
           </p>
         </div>
 
         {/* Sections */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-          {sections.map((section, i) => (
+          {sections.map((section) => (
             <div
               key={section.number}
               style={{
