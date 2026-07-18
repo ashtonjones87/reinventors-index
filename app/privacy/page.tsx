@@ -60,7 +60,7 @@ const sections = [
           All personal data is stored in Supabase (PostgreSQL) hosted in Sydney, Australia (ap-southeast-2 region). Your data does not leave Australia for storage purposes.
         </p>
         <p>
-          <strong style={{ color: '#334a69' }}>Cross-border processing:</strong> when you have a conversation with the Index, your message content is sent to Anthropic&apos;s Claude API for processing. Anthropic operates in the United States. Your conversation content is processed there in real time but is not stored by Anthropic, and Anthropic does not use your data for model training.
+          <strong style={{ color: '#334a69' }}>Cross-border processing:</strong>{' '}when you have a conversation with the Index, your message content is sent to Anthropic&apos;s Claude API for processing. Anthropic operates in the United States. Your conversation content is processed there in real time but is not stored by Anthropic, and Anthropic does not use your data for model training.
         </p>
       </>
     ),
