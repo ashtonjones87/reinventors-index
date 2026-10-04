@@ -23,6 +23,31 @@ interface ChatWindowProps {
   onDiagnosticReady?: (context: string | null, messages: { role: string; content: string }[]) => void
 }
 
+const SELF_STATEMENT = "A reminder: the Index is an AI tool built on the Reinventor's Mindset methodology. It isn't a person, it isn't Ashton, and it doesn't have feelings."
+
+function shouldShowSelfStatement(messages: { role: string }[], index: number): boolean {
+  if (index === 0) return true
+  const assistantsBefore = messages.slice(0, index).filter(m => m.role === 'assistant').length
+  return assistantsBefore > 0 && assistantsBefore % 6 === 0
+}
+
+function SystemNote({ text }: { text: string }) {
+  return (
+    <div style={{
+      margin: '16px 0',
+      padding: '10px 16px',
+      borderRadius: '8px',
+      background: 'rgba(51,74,105,0.06)',
+      border: '1px solid rgba(51,74,105,0.15)',
+      textAlign: 'center',
+    }}>
+      <p style={{ fontSize: '11px', color: '#8A9BB0', lineHeight: 1.6, fontFamily: 'var(--font-inter)', fontStyle: 'italic' }}>
+        {text}
+      </p>
+    </div>
+  )
+}
+
 function stripSignals(text: string): string {
   return text
     .replace(/\[DIAGNOSTIC_READY\]/g, '')
@@ -179,8 +204,8 @@ export default function ChatWindow({
                   </p>
                   <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: '1.65', maxWidth: '440px', margin: '0 auto' }}>
                     Good. That&apos;s where the work starts.
-                    Before we get into it, I want to understand where you are right now.
-                    Tell me what&apos;s going on - what brought you here today?
+                    Before the diagnostic, tell us where you are right now.
+                    What brought you here today?
                   </p>
                 </>
               ) : (
@@ -202,16 +227,24 @@ export default function ChatWindow({
             </div>
           )}
 
+          {/* Self-statement at session open */}
+          {messages.length > 0 && <SystemNote text={SELF_STATEMENT} />}
+
           {/* Messages - strip signals from display */}
           {messages.map((message, index) => (
-            <MessageBubble
-              key={index}
-              message={
-                message.role === 'assistant'
-                  ? { ...message, content: stripSignals(message.content) }
-                  : message
-              }
-            />
+            <>
+              {message.role === 'assistant' && shouldShowSelfStatement(messages, index) && index > 0 && (
+                <SystemNote key={`note-${index}`} text={SELF_STATEMENT} />
+              )}
+              <MessageBubble
+                key={index}
+                message={
+                  message.role === 'assistant'
+                    ? { ...message, content: stripSignals(message.content) }
+                    : message
+                }
+              />
+            </>
           ))}
 
           {/* Typing indicator */}
